@@ -1,0 +1,50 @@
+{
+  "name": "backbone.inline.template",
+  "version": "0.1.0",
+  "homepage": "https://github.com/hashchange/backbone.inline.template",
+  "authors": [
+    "Michael Heim <heim@zeilenwechsel.de>"
+  ],
+  "description": "",
+  "main": "dist/backbone.inline.template.js",
+  "keywords": [
+    "backbone",
+    "views",
+    "backbone.view",
+    "el",
+    "html",
+    "template",
+    "tag",
+    "tagName",
+    "className",
+    "attributes",
+    "marionette",
+    "backbone.declarative.views"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "public",
+    "reports",
+    "demo",
+    "lib-other",
+    "web-mocha",
+    "spec",
+    "src",
+    "Gruntfile.js",
+    "karma.conf.js",
+    "package.json"
+  ],
+  "devDependencies": {
+    "marionette": "^1.1.0 <1.9.0 || ^2.0.0"
+  },
+  "dependencies": {
+    "backbone": "^1.0.0 <1.4.0",
+    "backbone.declarative.views": "^2.1.0",
+    "underscore": "^1.5.0 <1.9.0"
+  }
+}
