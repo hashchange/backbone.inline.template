@@ -22,7 +22,7 @@
     "use strict";
 
     // @include backbone.inline.template.js
-    return Backbone.Inline.Template;
+    return Backbone.InlineTemplate;
 
 } ));
 
