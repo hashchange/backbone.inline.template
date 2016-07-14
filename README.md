@@ -50,14 +50,14 @@ Now, let's assume that you are using a Backbone framework which takes care of te
 With a single statement. This one:
 
 ```js
-Backbone.InlineTemplate.updateOriginalTemplates = true;
+Backbone.InlineTemplate.updateTemplateSource = true;
 ```
 
 Now Backbone.Inline.Template sets up your `el` as it did before, but it also modifies the original template in place. By the time your framework kicks in, the HTML defining the `el` is no longer part of the template content. Instead, the framework sees a template it can understand: just the part which provides the inner HTML of the `el`.
 
 For which Backbone frameworks does that work? Presumably for most. Backbone.Inline.Template kicks in at a very early stage during the life cycle of a view, so the chances are excellent that your framework of choice picks up the changes to the templates.
 
-You'll find the details on framework integration and the `updateOriginalTemplates` option [below][framework-integration].
+You'll find the details on framework integration and the `updateTemplateSource` option [below][framework-integration].
 
 ##### And finally...
 
@@ -113,14 +113,14 @@ requirejs.config( {
 
 The stable version of Backbone.Inline.Template is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install backbone.inline.template`. With npm, it is `npm install backbone.inline.template`.
 
-## Framework integration: `updateOriginalTemplates`
+## Framework integration: `updateTemplateSource`
 
 Backbone leaves it up to you how you deal with your templates. Frameworks built on top of Backbone, however, usually have specific expectations about what is in the template, and what isn't. The `el` of the view usually isn't.
 
 So if your templates contain the `el` of the view initially, it has to be gone by the time the framework processes the template. Backbone.Inline.Template can sort that out for you. Set the configuration option 
 
 ```js
-Backbone.InlineTemplate.updateOriginalTemplates = true;
+Backbone.InlineTemplate.updateTemplateSource = true;
 ```
 
 and your original templates are modified. They just contain the inner HTML of the `el` once Backbone.Inline.Template is done with them.
@@ -152,11 +152,11 @@ This transformed version is presented to the framework when it processes the tem
 
 Meanwhile, the `el` has morphed into a set of data attributes on the template element (`data-tag-name` etc). Backbone frameworks happily ignore the data attributes. However, they are picked up by [Backbone.Declarative.Views][Backbone.Declarative.Views], the engine behind Backbone.Inline.Template, whenever you instantiate a new view with this template. The `el` of the view is set up accordingly.
 
-##### Limitations of `updateOriginalTemplates`
+##### Limitations of `updateTemplateSource`
 
-The `updateOriginalTemplates` option is global. If you use it, the transformation applies to all templates which are [marked for processing][selecting-templates] by Backbone.Inline.Template. You can't transform templates on a case-by-case basis.
+The `updateTemplateSource` option is global. If you use it, the transformation applies to all templates which are [marked for processing][selecting-templates] by Backbone.Inline.Template. You can't transform templates on a case-by-case basis.
 
-Once the template is transformed, the original template element (`<script>` or `<template>`) is updated. So an actual template element needs to be present in the DOM. With `updateOriginalTemplates`, you can't use a raw HTML string as a template (you'll get an error if you do). Provide a node.
+Once the template is transformed, the original template element (`<script>` or `<template>`) is updated. So an actual template element needs to be present in the DOM. With `updateTemplateSource`, you can't use a raw HTML string as a template (you'll get an error if you do). Provide a node.
 
 ## Selecting templates for processing
 
@@ -488,7 +488,7 @@ Copyright (c) 2016 Michael Heim.
 [quick-intro]: #in-a-nutshell
 [use-case]: #why-use-it
 [setup]: #dependencies-and-setup
-[framework-integration]: #framework-integration-updateoriginaltemplates
+[framework-integration]: #framework-integration-updatetemplatesource
 [selecting-templates]: #selecting-templates-for-processing
 [cache]: #cache
 [fine-print-limitations]: #fine-print-and-limitations

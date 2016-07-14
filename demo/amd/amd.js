@@ -13,7 +13,7 @@ require( [
 
     // To make the inline `el` magic work with Marionette, the original template must be updated (modified).
     // Backbone-only views don't need this. Try it by commenting it out.
-    Backbone.InlineTemplate.updateOriginalTemplates = true;
+    Backbone.InlineTemplate.updateTemplateSource = true;
 
     var count = 10,
 

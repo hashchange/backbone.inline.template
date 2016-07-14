@@ -6,7 +6,7 @@
         pluginNamespace = Backbone.InlineTemplate = {
             hasInlineEl: _hasInlineEl,
             removeInlineElMarker: _removeInlineElMarker,
-            updateOriginalTemplates: false
+            updateTemplateSource: false
         },
 
         rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z].*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
@@ -32,7 +32,7 @@
             removeInlineElMarker = pluginNamespace.custom.hasOwnProperty( "removeInlineElMarker" ) ?
                                    pluginNamespace.custom.removeInlineElMarker :
                                    pluginNamespace.removeInlineElMarker,
-            updateTemplateContainer = pluginNamespace.updateOriginalTemplates,
+            updateTemplateContainer = pluginNamespace.updateTemplateSource,
 
             $inputTemplate = $( templateProperty );
 
