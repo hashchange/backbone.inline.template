@@ -11,7 +11,7 @@ define( [
     var ItemView = Backbone.View.extend( {
 
             initialize: function ( options ) {
-                this.template = this.declarativeViews.getCachedTemplate().compiled;
+                this.template = this.inlineTemplate.getCachedTemplate().compiled;
             },
 
             render: function () {
@@ -49,7 +49,7 @@ define( [
                 performance.mark( "create-itemViews-start" );
 
                 this.collection.each( function ( model ) {
-                    //Backbone.DeclarativeViews.clearCache();
+                    // Backbone.InlineTemplate.clearCache();
                     var itemView = new this.ItemView( { model: model } );
                     itemView.render();
 

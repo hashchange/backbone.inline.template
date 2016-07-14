@@ -34,8 +34,8 @@ define( [
             parent: ".stats",
 
             initialize: function ( options ) {
-                var compiledTemplate = this.declarativeViews.getCachedTemplate().compiled;
-                this.template = compiledTemplate || _.template( this.declarativeViews.getCachedTemplate(). html );
+                var compiledTemplate = this.inlineTemplate.getCachedTemplate().compiled;
+                this.template = compiledTemplate || _.template( this.inlineTemplate.getCachedTemplate(). html );
 
                 options || ( options = {} );
 
