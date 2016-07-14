@@ -31,7 +31,11 @@
     
         var $ = Backbone.$,
             $document = $( document ),
-            pluginNamespace = Backbone.InlineTemplate = {},
+            pluginNamespace = Backbone.InlineTemplate = {
+                hasInlineEl: _hasInlineEl,
+                removeInlineElMarker: _removeInlineElMarker,
+                updateOriginalTemplates: false
+            },
     
             rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z].*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
             rxSelfClosingHtmlTag = /<\s*[a-zA-Z].*?\/\s*>/;
@@ -41,8 +45,7 @@
         // --------------
     
         Backbone.DeclarativeViews.plugins.registerDataAttribute( "el-definition" );
-        pluginNamespace.hasInlineEl = _hasInlineEl;
-        pluginNamespace.updateOriginalTemplates = false;
+        Backbone.DeclarativeViews.plugins.registerCacheAlias( pluginNamespace, "inlineTemplate" );
     
         //
         // Template loader
@@ -51,7 +54,12 @@
         Backbone.DeclarativeViews.defaults.loadTemplate = function ( templateProperty ) {
             var parsedTemplateData, $resultTemplate,
     
-                hasInlineEl = pluginNamespace.hasInlineEl || _hasInlineEl,
+                // Check Backbone.InlineTemplate.custom.hasInlineEl first, even though it is undocumented, to catch
+                // accidental assignments. Same for removeInlineElMarker, except that undefined is a legitimate value for it.
+                hasInlineEl = pluginNamespace.custom.hasInlineEl || pluginNamespace.hasInlineEl || _hasInlineEl,
+                removeInlineElMarker = pluginNamespace.custom.hasOwnProperty( "removeInlineElMarker" ) ?
+                                       pluginNamespace.custom.removeInlineElMarker :
+                                       pluginNamespace.removeInlineElMarker,
                 updateTemplateContainer = pluginNamespace.updateOriginalTemplates,
     
                 $inputTemplate = $( templateProperty );
@@ -63,21 +71,37 @@
     
             } else {
     
-                parsedTemplateData = _parseTemplateHtml( $inputTemplate.html() );
+                // Parse the template data.
+                //
+                // NB Errors are not handled here and bubble up further. Try-catch is just used to enhance the error message
+                // for easier debugging.
+                try {
+    
+                    parsedTemplateData = _parseTemplateHtml( $inputTemplate.html() );
+    
+                } catch ( err ) {
+                    err.message += '\nThe template was requested for template property "' + templateProperty + '"';
+                    throw err;
+                }
     
                 if ( updateTemplateContainer ) {
                     // For updating the template container, it has to be a node in the DOM. Throw an error if it has been
                     // passed in as a raw HTML string.
+                    // todo make this a test in the spec suite
                     if ( !existsInDOM( templateProperty )  ) throw new Backbone.DeclarativeViews.TemplateError( "Backbone.Inline.Template: Can't update the template container because it doesn't exist in the DOM. The template property must be a valid selector (and not, for instance, a raw HTML string). Instead, we got \"" + templateProperty + '"' );
     
                     $resultTemplate = $inputTemplate;
+    
+                    // If the template element is marked with some sort of "has-inline-el" attribute, remove it after
+                    // conversion. (By default, the marker to be deleted is the `data-el-definition` attribute.)
+                    if ( _.isFunction( removeInlineElMarker ) ) removeInlineElMarker( $resultTemplate );
                 } else {
                     // No updating of the input template. Create a new template node which will stay out of the DOM, but is
                     // passed to the cache.
                     $resultTemplate = $( "<script />" ).attr( "type", "text/x-template" );
                 }
     
-                _mapElementToDataAttributes ( parsedTemplateData.$elSample, $resultTemplate );
+                _mapElementToDataAttributes( parsedTemplateData.$elSample, $resultTemplate );
                 $resultTemplate.empty().text( parsedTemplateData.templateContent );
     
             }
@@ -101,6 +125,28 @@
          */
         function _hasInlineEl ( $templateContainer ) {
             return $templateContainer.data( "el-definition" ) === "inline";
+        }
+    
+        /**
+         * Removes what marks the template as having an inline `el`, so that the template node looks like an ordinary,
+         * non-inline template. Here, in the default implementation, that just means removing the `data-el-definition`
+         * attribute.
+         *
+         * The function is also exposed as Backbone.InlineTemplate.removeInlineElMarker().
+         *
+         * If the marker has been changed by overriding Backbone.InlineTemplate.hasInlineEl, the function for removal must
+         * be changed accordingly. This is done by overriding Backbone.InlineTemplate.removeInlineElMarker.
+         *
+         * In case all templates are treated as having an inline `el`, and hence there is no marker which needs to be
+         * removed, Backbone.InlineTemplate.removeInlineElMarker can just be set to `undefined`.
+         * 
+         * NB The jQuery data cache doesn't have to be updated here. That happens automatically while the template is
+         * checked for data attributes in Backbone.Declarative.Views.
+         *
+         * @param {jQuery} $templateContainer
+         */
+        function _removeInlineElMarker ( $templateContainer ) {
+            $templateContainer.removeAttr( "data-el-definition" );
         }
     
         /**
@@ -211,7 +257,7 @@
          */
     
     }( Backbone, _ ));
-    return Backbone.Inline.Template;
+    return Backbone.InlineTemplate;
 
 } ));
 
