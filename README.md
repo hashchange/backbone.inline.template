@@ -89,9 +89,9 @@ That, too, is a legitimate requirement. But in that case, sadly, Backbone.Inline
 
 Backbone.Inline.Template depends on [Backbone.Declarative.Views][] and the Backbone stack: [Backbone][], [Underscore][], and [jQuery][] or one of its replacements. Include backbone.inline.template.js after that lot.
 
-Backbone.Inline.Template augments the Backbone.View base type, so its functionality is available in every view throughout your code. If you use other components which extend Backbone.View, load these components after Backbone.Inline.Template.
+If you use other components which extend Backbone.View, load these components after Backbone.Inline.Template.
 
-The stable version of Backbone.Inline.Template is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install backbone.inline.template`. With npm, it is `npm install backbone.inline.template`.
+Backbone.Inline.Template augments the Backbone.View base type, so its functionality is available in every view throughout your code.
 
 ### With Marionette
 
@@ -108,6 +108,10 @@ requirejs.config( {
     }
 } );
 ```
+
+### Download, Bower, npm
+
+The stable version of Backbone.Inline.Template is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install backbone.inline.template`. With npm, it is `npm install backbone.inline.template`.
 
 ## Framework integration: `updateOriginalTemplates`
 

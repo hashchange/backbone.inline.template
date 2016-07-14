@@ -5,7 +5,7 @@
   "authors": [
     "Michael Heim <heim@zeilenwechsel.de>"
   ],
-  "description": "",
+  "description": "Fully-formed templates for Backbone. Let template content define the DOM element of a Backbone view.",
   "main": "dist/backbone.inline.template.js",
   "keywords": [
     "backbone",

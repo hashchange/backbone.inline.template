@@ -8,7 +8,7 @@
     "url": "https://github.com/hashchange/backbone.inline.template.git"
   },
   "author": "Michael Heim <heim@zeilenwechsel.de> (http://www.zeilenwechsel.de/)",
-  "description": "",
+  "description": "Fully-formed templates for Backbone. Let template content define the DOM element of a Backbone view.",
   "main": "dist/amd/backbone.inline.template.js",
   "keywords": [
     "backbone",
