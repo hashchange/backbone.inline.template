@@ -170,7 +170,7 @@ Backbone.InlineTemplate.hasInlineEl
 
 with a custom function.
 
-##### Provide a function for `hasInlineEl`
+##### Providing a function for `hasInlineEl`
 
 A custom `hasInlineEl` function receives the template node as argument, wrapped in a jQuery object. The function can examine the template node and must return a boolean.
 
@@ -186,32 +186,6 @@ In order to treat all templates as having an inline `el`, the function just has 
 
 ```js
 Backbone.InlineTemplate.hasInlineEl = function () { return true; };
-```
-
-##### Provide a function for `removeInlineElMarker`
-
-A second change has to go along with it. Backbone.Inline.Template must know how to remove the attribute, or whatever else you used, which told the application that a template has an inline `el`. 
-
-So if you modify the default behaviour with your own `hasInlineEl` function, also provide a function which removes the "has-inline-el" marker, and override 
-
-```js
-Backbone.InlineTemplate.removeInlineElMarker
-```
-
-with it. The function receives the template node (wrapped in a jQuery object) as its argument. It must modify the node to make it look like a normal, non-inline template.
-
-In the example above, where templates had their type attribute set to `"text/x-inline-template"`, the type would have to be changed to a standard `"text/x-template"` value:
-
-```js
-Backbone.InlineTemplate.removeInlineElMarker = function ( $template ) {
-    $template.attr( "type", "text/x-template" );
-};
-```
-
-In case all templates are treated as having an inline `el`, and hence there is no marker which needs to be removed, just get rid of the function altogether:
-
-```js
-Backbone.InlineTemplate.removeInlineElMarker = undefined;
 ```
 
 ## Cache
