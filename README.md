@@ -326,6 +326,8 @@ It may be quite obvious, but maybe warrants at least a mention: The `el` is alre
 
 What does keeping the `el` imply? You defined the `el` inside the template. So if you compile that template as it is, the `el` element shows up in the result. Remove that element before you inject template content into the existing `el` of the view.
 
+You could also, of course, have the template updated and its `el` removed by Backbone.Inline.Template. Use the [`updateTemplateSource` option][framework-integration] for that – you may have to turn it on anyway if [your framework expects it][framework-integration]. 
+
 Or better still, don't do any of this, don't (re-)compile the template yourself. There is a much easier and more efficient option: Pull the compiled template from the [built-in cache][cache] instead. There, the duplicate `el` tag is already removed for you.
 
 ## Alternative approach: `setElement()`
@@ -363,7 +365,7 @@ render: function () {
 
 The `setElement()` pattern is unbeatable in one respect: you can use template variables for the `el` of a view.
 
-For instance, assume you need an individual `id` for each `el`, along the lines of 
+For instance, assume you need an individual `id` for each `el`. For some reason, you can't set it in your Javascript code with the `id` property of the view – it has to be a template variable. You need a template along the lines of 
 
 ```html
 <li id="item-{{itemNumber}}">
@@ -377,9 +379,9 @@ That's not exactly a long list of advantages, but for that one use case, `setEle
 
 Relying on `setElement()` has a lot of drawbacks. None of these matter if your use case forces you to recreate the `el` (see [the pros][set-element-pros]). But there is a strong case against using `setElement()` if you have a choice.
 
-For starters, compatibility – both with existing and future code – can quickly become an issue.
+The challenges broadly fall into two categories: compatibility and implementation detail. Compatibility, both with existing and future code, is probably the more difficult of the two.
 
-- Let's face it: defining the `el` in the template breaks with Backbone conventions. It may be fine for view code you have written yourself, but as soon as you pull third-party Backbone extensions like Marionette into a project, templates of that kind no longer work. You probably have to rewrite the render method of your would-be framework, at the very least, to adapt it.
+- Defining the `el` in the template may be convenient and even necessary, but it breaks with Backbone conventions. For the view code you write yourself, that won't be much of an issue. But as soon as you pull third-party Backbone extensions like Marionette into a project, templates of that kind no longer work. You probably have to rewrite the render method of your would-be framework, at the very least, to adapt it.
 
   Backbone.Inline.Template does its processing very early during the life cycle of a view. That's why it is able to [present a cleaned-up, conventional template][framework-integration] to Backbone frameworks. With `setElement()`, however, you don't have that option. It forces you to keep the original template around until render time. 
 
@@ -387,11 +389,11 @@ For starters, compatibility – both with existing and future code – can quick
 
   Replacing a view's `el` with `setElement()`, on the other hand, requires very specific steps at a very specific time, and may clash with existing coding conventions. Expect problems when integrating it into legacy code. 
 
-The second group of issues is about pitfalls when rendering views with `setElement()`. The devil here is in the details. These issues are solvable, but require attention (and additional code).
+The other group of issues is about pitfalls when rendering views with `setElement()`. The devil here is in the details. These issues are solvable, but require attention (and additional code).
 
-- `setElement()` [only rebinds][setelement-event-rebinding-jsbin] events set up with the `events` hash of the view, but not events set up in any other way. You have to remember taking care of them.
+- `setElement()` rebinds events set up with the `events` hash of the view, but not events [set up in any other way][setelement-event-rebinding-jsbin]. You have to remember taking care of them.
 
-- `setElement()` screws up events in nested views. Even though a [good pattern exists][ian-storm-taylor-rendering-views] to deal with it, it's yet another pitfall to be aware of.
+- `setElement()` screws up events in nested views. Fortunately, a [good pattern exists][ian-storm-taylor-rendering-views] to deal with it. It is important to be aware of the issue, though.
 
 - Recreating the `el` and moving the delegated events around has a performance cost which matters as the number of render calls goes up (e.g. large lists).
 
