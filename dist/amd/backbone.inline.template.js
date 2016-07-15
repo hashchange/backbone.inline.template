@@ -1,4 +1,4 @@
-// Backbone.Inline.Template, v0.1.0
+// Backbone.Inline.Template, v0.2.0
 // Copyright (c) 2016 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.inline.template
@@ -33,8 +33,7 @@
             $document = $( document ),
             pluginNamespace = Backbone.InlineTemplate = {
                 hasInlineEl: _hasInlineEl,
-                removeInlineElMarker: _removeInlineElMarker,
-                updateOriginalTemplates: false
+                updateTemplateSource: false
             },
     
             rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z].*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
@@ -45,6 +44,7 @@
         // --------------
     
         Backbone.DeclarativeViews.plugins.registerDataAttribute( "el-definition" );
+        Backbone.DeclarativeViews.plugins.registerDataAttribute( "bbit-internal-template-status" );
         Backbone.DeclarativeViews.plugins.registerCacheAlias( pluginNamespace, "inlineTemplate" );
     
         //
@@ -55,16 +55,13 @@
             var parsedTemplateData, $resultTemplate,
     
                 // Check Backbone.InlineTemplate.custom.hasInlineEl first, even though it is undocumented, to catch
-                // accidental assignments. Same for removeInlineElMarker, except that undefined is a legitimate value for it.
+                // accidental assignments.
                 hasInlineEl = pluginNamespace.custom.hasInlineEl || pluginNamespace.hasInlineEl || _hasInlineEl,
-                removeInlineElMarker = pluginNamespace.custom.hasOwnProperty( "removeInlineElMarker" ) ?
-                                       pluginNamespace.custom.removeInlineElMarker :
-                                       pluginNamespace.removeInlineElMarker,
-                updateTemplateContainer = pluginNamespace.updateOriginalTemplates,
+                updateTemplateContainer = pluginNamespace.updateTemplateSource,
     
                 $inputTemplate = $( templateProperty );
     
-            if ( !hasInlineEl( $inputTemplate ) ) {
+            if ( _isMarkedAsUpdated( $inputTemplate ) || !hasInlineEl( $inputTemplate ) ) {
     
                 // No inline el definition. Just return the template as is.
                 $resultTemplate = $inputTemplate;
@@ -92,9 +89,9 @@
     
                     $resultTemplate = $inputTemplate;
     
-                    // If the template element is marked with some sort of "has-inline-el" attribute, remove it after
-                    // conversion. (By default, the marker to be deleted is the `data-el-definition` attribute.)
-                    if ( _.isFunction( removeInlineElMarker ) ) removeInlineElMarker( $resultTemplate );
+                    // The template is updated and the inline `el` removed. Set a flag on the template to make sure the
+                    // template is never processed again as having an inline `el`.
+                    _markAsUpdated( $resultTemplate );
                 } else {
                     // No updating of the input template. Create a new template node which will stay out of the DOM, but is
                     // passed to the cache.
@@ -128,25 +125,40 @@
         }
     
         /**
-         * Removes what marks the template as having an inline `el`, so that the template node looks like an ordinary,
-         * non-inline template. Here, in the default implementation, that just means removing the `data-el-definition`
-         * attribute.
+         * Marks a template as updated and no longer having an inline `el`. Henceforth, the template node is treated like an
+         * ordinary, non-inline template.
          *
-         * The function is also exposed as Backbone.InlineTemplate.removeInlineElMarker().
+         * ## Rationale:
          *
-         * If the marker has been changed by overriding Backbone.InlineTemplate.hasInlineEl, the function for removal must
-         * be changed accordingly. This is done by overriding Backbone.InlineTemplate.removeInlineElMarker.
+         * A template is updated when the `updateTemplateSource` option is set. After the update, the `el` markup has been
+         * removed from the template content, and only the inner HTML of the `el` is still present in the template.
          *
-         * In case all templates are treated as having an inline `el`, and hence there is no marker which needs to be
-         * removed, Backbone.InlineTemplate.removeInlineElMarker can just be set to `undefined`.
-         * 
-         * NB The jQuery data cache doesn't have to be updated here. That happens automatically while the template is
-         * checked for data attributes in Backbone.Declarative.Views.
+         * Therefore, the template must not be processed again for having an inline `el`, even though it is still marked as
+         * such. (The inline `el` marker - e.g. data-el-definition: "inline" - is still present.) Repeated processing would
+         * garble the remaining template content.
+         *
+         * That is prevented by setting a second flag in a data attribute which is considered internal. A template which is
+         * marked as updated, with that flag, is not processed and updated again.
+         *
+         * ## jQuery data cache:
+         *
+         * The jQuery data cache doesn't have to be updated here. That happens automatically while the template is checked
+         * for data attributes in Backbone.Declarative.Views.
          *
          * @param {jQuery} $templateContainer
          */
-        function _removeInlineElMarker ( $templateContainer ) {
-            $templateContainer.removeAttr( "data-el-definition" );
+        function _markAsUpdated ( $templateContainer ) {
+            $templateContainer.attr( "data-bbit-internal-template-status", "updated" );
+        }
+    
+        /**
+         * Checks if a template is marked as having been updated.
+         *
+         * @param   {jQuery}  $templateContainer
+         * @returns {boolean}
+         */
+        function _isMarkedAsUpdated ( $templateContainer ) {
+            return $templateContainer.data( "bbit-internal-template-status" ) === "updated";
         }
     
         /**
