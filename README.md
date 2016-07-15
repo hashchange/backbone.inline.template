@@ -9,7 +9,7 @@ Backbone.Inline.Template is that feature.
 
 ## In a nutshell
 
-Assume you want to set up a view with an `el` of `<p id="foo" class="bar">`. But you don't want to set up the `el` with Backbone's `tagName`, `id` and `className`, as you'd normally have to do. Instead, you want the `el` to be defined inside the template itself.
+Assume you want to create a view with an `el` of `<p id="foo" class="bar">`. But you don't want to set up the `el` in your Javascript code, with Backbone's `tagName`, `id` and `className`, as you'd normally have to do. Instead, the `el` should be defined inside the template itself, with HTML markup.
 
 ##### Classic Backbone
 
@@ -55,7 +55,7 @@ Backbone.InlineTemplate.updateTemplateSource = true;
 
 Now Backbone.Inline.Template sets up your `el` as it did before, but it also modifies the original template in place. By the time your framework kicks in, the HTML defining the `el` is no longer part of the template content. Instead, the framework sees a template it can understand: just the part which provides the inner HTML of the `el`.
 
-For which Backbone frameworks does that work? Presumably for most. Backbone.Inline.Template kicks in at a very early stage during the life cycle of a view, so the chances are excellent that your framework of choice picks up the changes to the templates.
+For which Backbone frameworks does that work? Presumably for most. Backbone.Inline.Template does its job at a very early stage during the life cycle of a view. So the chances are excellent that your framework of choice picks up the changes which Backbone.Inline.Template made to the templates.
 
 You'll find the details on framework integration and the `updateTemplateSource` option [below][framework-integration].
 
@@ -190,7 +190,7 @@ Backbone.InlineTemplate.hasInlineEl = function () { return true; };
 
 ## Cache
 
-Backbone.Inline.Template is a plug-in for Backbone.Declarative.Views, which does all the real work. Unsurprisingly, both share the same cache. Backbone.Inline.Template just provides a number of aliases to access that cache.
+Backbone.Inline.Template is a plug-in for [Backbone.Declarative.Views][], which does all the real work. Unsurprisingly, both share the same cache. Backbone.Inline.Template just provides a number of aliases to access that cache.
 
 In the documentation of Backbone.Declarative.Views, you'll find more [about the cache itself][Backbone.Declarative.Views-cache]. Below is a list of the available aliases.
 
@@ -449,7 +449,12 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release notes
 
-### v.0.1.0
+### v0.2.0
+
+- Removed `removeInlineElMarker()`
+- Renamed `updateOriginalTemplates` option to `updateTemplateSource`
+
+### v0.1.0
 
 - Initial public release
 
@@ -467,7 +472,7 @@ Copyright (c) 2016 Michael Heim.
 [cache]: #cache
 [fine-print-limitations]: #fine-print-and-limitations
 [no-el-vars]: #dont-use-template-variables-in-the-el-itself
-[set-element-as-alternative]: #alternative-approach-setElement
+[set-element-as-alternative]: #alternative-approach-setelement
 [set-element-pros]: #the-pros
 [set-element-cons]: #the-cons
 [build]: #build-process-and-tests
