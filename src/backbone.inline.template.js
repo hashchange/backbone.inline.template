@@ -8,8 +8,8 @@
             updateTemplateSource: false
         },
 
-        rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z].*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
-        rxSelfClosingHtmlTag = /<\s*[a-zA-Z].*?\/\s*>/;
+        rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z][\s\S]*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
+        rxSelfClosingHtmlTag = /<\s*[a-zA-Z][\s\S]*?\/?\s*>/;
 
     //
     // Initialization
