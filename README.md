@@ -365,13 +365,13 @@ render: function () {
 
 The `setElement()` pattern is unbeatable in one respect: you can use template variables for the `el` of a view.
 
-For instance, assume you need an individual `id` for each `el`. For some reason, you can't set it in your Javascript code with the `id` property of the view – it has to be a template variable. You need a template along the lines of 
+For instance, assume you need an individual `id` for each `el`. For some reason, you can't set the `id` in your Javascript code with the `id` property of the view. The `id` has to be a template variable, along the lines of 
 
 ```html
 <li id="item-{{itemNumber}}">
 ```
 
-For that, you have to recreate the `el` when the template data is ready. The pattern above allows you to do it.
+To incorporate the template data, you have to recreate the `el` when the data is ready. The pattern above allows you to do it.
 
 That's not exactly a long list of advantages, but for that one use case, `setElement()` is the way to go.
 
@@ -465,6 +465,8 @@ New test files in the `spec` directory are picked up automatically, no need to e
 MIT.
 
 Copyright (c) 2016 Michael Heim.
+
+Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [See file][data-provider.js].
 
 [quick-intro]: #in-a-nutshell
 [use-case]: #why-use-it
