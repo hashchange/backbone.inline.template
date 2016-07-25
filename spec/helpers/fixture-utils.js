@@ -14,5 +14,5 @@ function createInnerContent ( varStartDelimiter, varEndDelimiter, indentation ) 
                        indent + '  <dd class="ddclass">%%dd_content&&</dd>\n' +
                        indent + '</dl>';
 
-    return innerContent.replace( "%%", varStartDelimiter ).replace( "&&", varEndDelimiter );
+    return innerContent.replace( /%%/g, varStartDelimiter ).replace( /&&/g, varEndDelimiter );
 }
