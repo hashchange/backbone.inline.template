@@ -61,13 +61,43 @@
  */
 
 /**
- * A data provider for use with Mocha. Use this around a call to it() to run the test over a series of data.
+ * A data provider for use with Mocha. Generates describe() blocks. Use this around a call to it() to run the test over
+ * a series of data.
  *
  * @throws {Error}                      if dataset is missing or an empty array
  * @param  {Object|Array} dataset       the data to test
  * @param  {Function}     testFunction  the function to call for each piece of data
  */
-function withData ( dataset, testFunction ) {
+function describeWithData ( dataset, testFunction ) {
+    _withData( describe, dataset, testFunction );
+}
+
+/**
+ * A data provider for use with Mocha. Generates it() blocks. Use this around test code which would normally be placed
+ * into it(). Each key in the data set becomes the name of a test.
+ *
+ * @throws {Error}                      if dataset is missing or an empty array
+ * @param  {Object|Array} dataset       the data to test
+ * @param  {Function}     testFunction  the function to call for each piece of data
+ */
+function itWithData ( dataset, testFunction ) {
+    _withData( it, dataset, testFunction );
+}
+
+/**
+ * A data provider for use with Mocha. Use this to run tests over a series of data.
+ *
+ * @throws {Error}                        if dataset is missing or an empty array
+ * @param  {Function}     mochaFunction   the Mocha function to use for generating the block, ie `define` or `it`
+ * @param  {Object|Array} dataset         the data to test
+ * @param  {Function}     testFunction    the function to call for each piece of data
+ * @param  {string}       [prefix=""]     prefix for each dataset name (when turned into the test name)
+ * @param  {string}       [suffix=""]     prefix for each dataset name (when turned into the test name)
+ */
+function _withData ( mochaFunction, dataset, testFunction, prefix, suffix ) {
+
+    prefix || ( prefix = "" );
+    suffix || ( suffix = "" );
 
     // check for missing or null argument
     if ( typeof dataset !== 'object' || dataset === null ) {
@@ -93,7 +123,7 @@ function withData ( dataset, testFunction ) {
     }
 
     /*
-     * For each name, create a new describe() block containing the name.
+     * For each name, create a new describe() or it() block containing the name.
      * This causes the dataset info to be output into the console, making
      * it easier to determine which dataset caused a problem when there's an
      * error.
@@ -102,7 +132,7 @@ function withData ( dataset, testFunction ) {
         if ( namedDataset.hasOwnProperty( name ) ) {
             //jshint loopfunc:true
 
-            describe( name, (function ( name ) {
+            mochaFunction( prefix + name + suffix, (function ( name ) {
                 return function () {
 
                     var args = namedDataset[name];

@@ -1,14 +1,19 @@
 /**
  * Creates the inner content of a template, for use _inside of_ the `el`.
- * @param   {string} varStartDelimiter  start delimiter of a template variable (e.g. "{{" for Mustache)
- * @param   {string} varEndDelimiter    end delimiter of a template variable (e.g. "}}" for Mustache)
- * @param   {string} [indentation=""]   a string of whitespace, e.g. "   " or "" (no indentation)
+ *
+ * @param   {string} varStartDelimiter         start delimiter of a template variable (e.g. "{{" for Mustache)
+ * @param   {string} varEndDelimiter           end delimiter of a template variable (e.g. "}}" for Mustache)
+ * @param   {object} [options]
+ * @param   {string} [options.indentation=""]  a string of whitespace, e.g. "   " or "" (no indentation)
+ * @param   {string} [options.insertion=""]    an additional string which is inserted somewhere in the middle of the content
  * @returns {string}
  */
-function createInnerContent ( varStartDelimiter, varEndDelimiter, indentation ) {
-    var indent = indentation || "",
+function createInnerContent ( varStartDelimiter, varEndDelimiter, options ) {
+    var indent = options && options.indentation || "",
+        insert = options && options.insertion ? indent + options.insertion : "",
         innerContent = indent + '<h1 class="header">This is a %%Header&&</h1>    \n' +
                        indent + 'Some random %%text&& with different line breaks.<br><br/><br />\n' +
+                       insert +
                        indent + '<dl class="%%dl_class&&">\n' +
                        indent + '  <dt class="dtclass">%%dd_name&&</dt>\n' +
                        indent + '  <dd class="ddclass">%%dd_content&&</dd>\n' +
