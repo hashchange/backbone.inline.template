@@ -4,37 +4,42 @@
 
     describe( 'Matcher test', function () {
 
-        var $head = $( "head" );
+        var $template, expected, view,
+            $head = $( "head" );
 
         describe( 'Identifying the `el` and its content. When the `el` is defined', function () {
 
             var tagFormatScenario = {
-                    "a self-closing tag, using a closing slash": { isSelfClosing: true, selfClosingChar: "/" },
-                    "a self-closing tag, omitting a closing slash": { isSelfClosing: true, selfClosingChar: "" },
-                    "a tag which is opened and closed": { isSelfClosing: false }
+                    "with a self-closing tag, using a closing slash": { isSelfClosing: true, selfClosingChar: "/" },
+                    "with a self-closing tag, omitting a closing slash": { isSelfClosing: true, selfClosingChar: "" },
+                    "with a tag which is opened and closed": { isSelfClosing: false }
                 },
 
                 tagNameScenario = {
-                    "a single-letter tag": "p",
-                    "a multi-letter tag": "section"
+                    "with a single-letter tag": "p",
+                    "with a multi-letter tag": "section"
                 },
 
                 attributeScenario = {
-                    "no attributes": {},
-                    "attributes class, id, and others (values in single quotes)": {
-                        singleQuotes: true,
+                    "without attributes": {},
+                    "with attributes class, id, and others (values in single quotes)": {
+                        quoteStyle: "'",
                         attrs: { className: "fooClass barClass", id: "fooId", lang: "fr", contenteditable: "true" }
                     },
-                    "attributes class, id, and others (values in double quotes)": {
-                        singleQuotes: false,
+                    "with attributes class, id, and others (values in double quotes)": {
+                        quoteStyle: '"',
                         attrs: { className: "fooClass barClass", id: "fooId", lang: "fr", contenteditable: "true" }
+                    },
+                    "with attributes class, id, and others (values without quotes)": {
+                        quoteStyle: "",
+                        attrs: { className: "fooClass", id: "fooId", lang: "fr", contenteditable: "true" }
                     }
                 },
 
                 whitespaceScenario = {
-                    "no redundant white space around and inside the tag": "",
-                    "redundant whitespace around and inside the tag": "   ",
-                    "redundant whitespace, including line breaks, around and inside the tag": "   \n    \n   "
+                    "without redundant white space around and inside the tag": "",
+                    "with redundant whitespace around and inside the tag": "   ",
+                    "with redundant whitespace, including newlines, around and inside the tag": "   \n    \n   "
                 };
 
 
@@ -46,67 +51,60 @@
 
                         withData( whitespaceScenario, function ( extraSpace ) {
 
-                            var $template, expected, view;
-
-                            before( function () {
+                            beforeEach( function () {
 
                                 var isSelfClosing = tagFormat.isSelfClosing,
-                                    selfClosingChar = tagFormat.selfClosingChar,
 
-                                    attributes = attributesSetup.attrs || {},
-                                    attributeQuote = attributesSetup.singleQuotes ? "'" : '"',
-                                    customAttributes = _.omit( attributes, "className", "id" ),
+                                    elDefinition = {
+                                        tagName: tagName,
+                                        attributes: attributesSetup.attrs
+                                    },
 
-                                    attributeString = _.reduce( attributes, function ( reduced, attrValue, attrName ) {
-                                        var name = attrName === "className" ? "class" : attrName;
-                                        return reduced + " " + extraSpace + name + extraSpace + "=" + extraSpace + attributeQuote + attrValue + attributeQuote;
-                                    }, "" ),
+                                    elFormatting = {
+                                        isSelfClosing: isSelfClosing,
+                                        selfClosingChar: tagFormat.selfClosingChar,
+                                        quoteStyle: attributesSetup.quoteStyle,
+                                        extraSpace: extraSpace
+                                    },
 
-                                    elStartTag = extraSpace + "<" + tagName + attributeString + extraSpace + ( isSelfClosing ? selfClosingChar + ">" : ">" ),
-                                    elEndTag = isSelfClosing ? extraSpace : "</" + extraSpace + tagName + extraSpace + ">" + extraSpace,
-                                    innerContent = isSelfClosing ? "" : extraSpace + createInnerContent( "{{", "}}", extraSpace ) + extraSpace,
-                                    templateNodeInnerHtml = elStartTag + innerContent + elEndTag,
+                                    elContent = isSelfClosing ? "" : extraSpace + createInnerContent( "{{", "}}", extraSpace ) + extraSpace,
 
+                                    inlineTemplate = createInlineTemplate( elDefinition, elContent, elFormatting ),
                                     templateId = _.uniqueId( "template_" );
 
-                                $template = $( "<script />" )
-                                    .attr( {
-                                        id: templateId,
-                                        type: "text/x-template",
-                                        "data-el-definition": "inline"
-                                    } )
-                                    .text( templateNodeInnerHtml )
+                                $template = createTemplateNode( templateId, inlineTemplate.html.fullContent, { "data-el-definition": "inline" } )
                                     .appendTo( $head );
 
                                 expected = {
                                     tagName: tagName,
-                                    className: attributes.className,
-                                    attributes: _.size( customAttributes ) ? customAttributes : undefined,
-                                    contenteditable: attributes.contenteditable,
-                                    innerContent: innerContent
+                                    className: inlineTemplate.el.className,
+                                    id: inlineTemplate.el.id,
+                                    attributes: inlineTemplate.el.attributes,
+                                    elContent: elContent
                                 };
 
                                 view = new Backbone.View( { template: "#" + templateId } );
                             } );
 
-                            after( function () {
+                            afterEach( function () {
                                 $template.remove();
                                 Backbone.InlineTemplate.clearCache();
                             } );
 
-                            it( 'it detects the el correctly', function () {
+                            it( 'the `el` is detected correctly', function () {
                                 // Determined by checking the cache. Could also be determined by examining view.el.
                                 var cached = view.inlineTemplate.getCachedTemplate();
 
                                 expect( cached.tagName ).to.equal( expected.tagName );
                                 expect( cached.className ).to.equal( expected.className );
+                                expect( cached.id ).to.equal( expected.id );
                                 expect( cached.attributes ).to.eql( expected.attributes );
                             } );
 
-                            it( 'it detects the el content correctly', function () {
+                            it( 'the `el` content is detected correctly', function () {
                                 // Determined by checking the cache.
                                 var cached = view.inlineTemplate.getCachedTemplate();
-                                expect( cached.html ).to.equal( expected.innerContent );
+                                expect( cached.html ).to.equal( expected.elContent );
                             } );
 
                         } );

@@ -49,7 +49,7 @@
  *
  *   Copyright
  *   (c) 2014 Box, Inc.
- *   (c) 2015 Michael Heim, Zeilenwechsel.de
+ *   (c) 2015-2016 Michael Heim, Zeilenwechsel.de
  *
  *   All rights reserved. Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
  *   except in compliance with the License. You may obtain a copy of the License at
@@ -102,7 +102,7 @@ function withData ( dataset, testFunction ) {
         if ( namedDataset.hasOwnProperty( name ) ) {
             //jshint loopfunc:true
 
-            describe( 'with ' + name, (function ( name ) {
+            describe( name, (function ( name ) {
                 return function () {
 
                     var args = namedDataset[name];
