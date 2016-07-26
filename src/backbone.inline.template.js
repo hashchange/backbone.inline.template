@@ -8,6 +8,8 @@
             updateTemplateSource: false
         },
 
+        rxLeadingComments = /^(\s*<!--[\s\S]*?-->)+/,
+        rxTrailingComments = /(<!--[\s\S]*?-->\s*)+$/,
         rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z][\s\S]*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
         rxSelfClosingHtmlTag = /<\s*[a-zA-Z][\s\S]*?\/?\s*>/;
 
@@ -142,7 +144,8 @@
     function _parseTemplateHtml ( templateText ) {
 
         var elDefinition, $elSample, templateContent = "",
-            matches = rxOutermostHtmlTagWithContent.exec( templateText ) || rxSelfClosingHtmlTag.exec( templateText );
+            normalizedTemplateText = templateText.replace( rxLeadingComments, "" ).replace( rxTrailingComments, "" ),
+            matches = rxOutermostHtmlTagWithContent.exec( normalizedTemplateText ) || rxSelfClosingHtmlTag.exec( normalizedTemplateText );
 
         if ( !matches ) throw new Backbone.DeclarativeViews.TemplateError( 'Backbone.Inline.Template: Failed to parse template with inline `el` definition. No matching content found.\nTemplate text is "' + templateText + '"' );
 
