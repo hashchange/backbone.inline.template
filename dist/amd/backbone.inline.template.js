@@ -1,4 +1,4 @@
-// Backbone.Inline.Template, v0.2.0
+// Backbone.Inline.Template, v0.2.1
 // Copyright (c) 2016 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.inline.template
@@ -36,8 +36,10 @@
                 updateTemplateSource: false
             },
     
-            rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z].*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
-            rxSelfClosingHtmlTag = /<\s*[a-zA-Z].*?\/\s*>/;
+            rxLeadingComments = /^(\s*<!--[\s\S]*?-->)+/,
+            rxTrailingComments = /(<!--[\s\S]*?-->\s*)+$/,
+            rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z][\s\S]*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
+            rxSelfClosingHtmlTag = /<\s*[a-zA-Z][\s\S]*?\/?\s*>/;
     
         //
         // Initialization
@@ -84,7 +86,6 @@
                 if ( updateTemplateContainer ) {
                     // For updating the template container, it has to be a node in the DOM. Throw an error if it has been
                     // passed in as a raw HTML string.
-                    // todo make this a test in the spec suite
                     if ( !existsInDOM( templateProperty )  ) throw new Backbone.DeclarativeViews.TemplateError( "Backbone.Inline.Template: Can't update the template container because it doesn't exist in the DOM. The template property must be a valid selector (and not, for instance, a raw HTML string). Instead, we got \"" + templateProperty + '"' );
     
                     $resultTemplate = $inputTemplate;
@@ -171,7 +172,8 @@
         function _parseTemplateHtml ( templateText ) {
     
             var elDefinition, $elSample, templateContent = "",
-                matches = rxOutermostHtmlTagWithContent.exec( templateText ) || rxSelfClosingHtmlTag.exec( templateText );
+                normalizedTemplateText = templateText.replace( rxLeadingComments, "" ).replace( rxTrailingComments, "" ),
+                matches = rxOutermostHtmlTagWithContent.exec( normalizedTemplateText ) || rxSelfClosingHtmlTag.exec( normalizedTemplateText );
     
             if ( !matches ) throw new Backbone.DeclarativeViews.TemplateError( 'Backbone.Inline.Template: Failed to parse template with inline `el` definition. No matching content found.\nTemplate text is "' + templateText + '"' );
     
