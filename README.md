@@ -451,6 +451,13 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release notes
 
+### v0.2.1
+
+- Added matcher tests
+- Fixed matcher handling of multi-line `el` tags
+- Fixed matcher handling of omitted slash in self-closing `el` tags
+- Fixed matcher handling of top-level HTML comments which contain tags 
+
 ### v0.2.0
 
 - Removed `removeInlineElMarker()`
