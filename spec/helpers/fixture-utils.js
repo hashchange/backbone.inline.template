@@ -11,7 +11,7 @@
 function createInnerContent ( varStartDelimiter, varEndDelimiter, options ) {
     var indent = options && options.indentation || "",
         insert = options && options.insertion ? indent + options.insertion : "",
-        innerContent = indent + '<h1 class="header">This is a %%Header&&</h1>    \n' +
+        innerContent = indent + '<h1 class="header">This is a %%header&&</h1>    \n' +
                        indent + 'Some random %%text&& with different line breaks.<br><br/><br />\n' +
                        insert +
                        indent + '<dl class="%%dl_class&&">\n' +

@@ -289,6 +289,60 @@
 
         } );
 
+        describe( 'Template variable format', function () {
+
+            var delimiterScenario = {
+                    "When the `el` contains template variables in EJS format": ["<%= ", " %>"],
+                    "When the `el` contains template variables in Mustache format": [ "{{", "}}" ],
+                    "When the `el` contains template variables in ES6 format": [ "${", "}" ]
+                };
+
+            describeWithData( delimiterScenario, function ( varStartDelimiter, varEndDelimiter ) {
+
+                var _updateTemplateSourceDefault;
+
+                before( function () {
+                    _updateTemplateSourceDefault = Backbone.InlineTemplate.updateTemplateSource;
+                    Backbone.InlineTemplate.updateTemplateSource = true;
+                } );
+
+                after( function () {
+                    Backbone.InlineTemplate.updateTemplateSource = _updateTemplateSourceDefault;
+                } );
+
+                beforeEach( function () {
+                    var templateId = _.uniqueId( "template_" ),
+                        elContent = createInnerContent( varStartDelimiter, varEndDelimiter ),
+                        inlineTemplate = createInlineTemplate( { tagName: "p" }, elContent );
+
+                    $template = createTemplateNode( templateId, inlineTemplate.html.fullContent, { "data-el-definition": "inline" } )
+                        .appendTo( $head );
+
+                    expected = {
+                        elContent: elContent
+                    };
+
+                    view = new Backbone.View( { template: "#" + templateId } );
+                } );
+
+                afterEach( function () {
+                    $template.remove();
+                    Backbone.InlineTemplate.clearCache();
+                } );
+
+                it( 'the `el` content is cached correctly', function () {
+                    var cached = view.inlineTemplate.getCachedTemplate();
+                    expect( cached.html ).to.equal( expected.elContent );
+                } );
+
+                it( 'the `el` content shows up correctly in the template when it is updated with `updateTemplateSource`', function () {
+                    expect ( $template.html() ).to.equal( expected.elContent );
+                } );
+
+            } )
+            
+        } );
+
     } );
 
 })();
