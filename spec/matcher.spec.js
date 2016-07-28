@@ -7,6 +7,12 @@
         var $template, expected, view,
             $head = $( "head" );
 
+        afterEach( function () {
+            if ( $template ) $template.remove();
+            $template = expected = view = undefined;
+            Backbone.InlineTemplate.clearCache();
+        } );
+
         describe( 'Identifying the `el` and its content. When the `el` is defined', function () {
 
             var tagFormatScenario = {
@@ -24,11 +30,11 @@
                     "without attributes": {},
                     "with attributes class, id, and others (values in single quotes)": {
                         quoteStyle: "'",
-                        attrs: { className: "fooClass barClass", id: "fooId", lang: "fr", contenteditable: "true" }
+                        attrs: { className: "fooClass barClass", id: "fooId", lang: "fr", contenteditable: "true", style: "font-weight: bold;" }
                     },
                     "with attributes class, id, and others (values in double quotes)": {
                         quoteStyle: '"',
-                        attrs: { className: "fooClass barClass", id: "fooId", lang: "fr", contenteditable: "true" }
+                        attrs: { className: "fooClass barClass", id: "fooId", lang: "fr", contenteditable: "true", style: "font-weight: bold;" }
                     },
                     "with attributes class, id, and others (values without quotes)": {
                         quoteStyle: "",
@@ -86,11 +92,6 @@
                                 view = new Backbone.View( { template: "#" + templateId } );
                             } );
 
-                            afterEach( function () {
-                                $template.remove();
-                                Backbone.InlineTemplate.clearCache();
-                            } );
-
                             it( 'the `el` is detected correctly', function () {
                                 // Determined by checking the cache. Could also be determined by examining view.el.
                                 var cached = view.inlineTemplate.getCachedTemplate();
@@ -98,7 +99,7 @@
                                 expect( cached.tagName ).to.equal( expected.tagName );
                                 expect( cached.className ).to.equal( expected.className );
                                 expect( cached.id ).to.equal( expected.id );
-                                expect( cached.attributes ).to.eql( expected.attributes );
+                                expect( normalizeAttributes( cached.attributes ) ).to.eql( expected.attributes );
                             } );
 
                             it( 'the `el` content is detected correctly', function () {
@@ -199,11 +200,6 @@
                                 view = new Backbone.View( { template: "#" + templateId } );
                             } );
 
-                            afterEach( function () {
-                                $template.remove();
-                                Backbone.InlineTemplate.clearCache();
-                            } );
-
                             it( 'HTML comments are ignored and the `el` is detected correctly', function () {
                                 // Determined by checking the cache. Could also be determined by examining view.el.
                                 var cached = view.inlineTemplate.getCachedTemplate();
@@ -211,7 +207,7 @@
                                 expect( cached.tagName ).to.equal( expected.tagName );
                                 expect( cached.className ).to.equal( expected.className );
                                 expect( cached.id ).to.equal( expected.id );
-                                expect( cached.attributes ).to.eql( expected.attributes );
+                                expect( normalizeAttributes( cached.attributes ) ).to.eql( expected.attributes );
                             } );
 
                             it( 'the `el` content is detected correctly', function () {
@@ -292,7 +288,7 @@
         describe( 'Template variable format', function () {
 
             var delimiterScenario = {
-                    "When the `el` contains template variables in EJS format": ["<%= ", " %>"],
+                    "When the `el` contains template variables in EJS format": [ "<%= ", " %>" ],
                     "When the `el` contains template variables in Mustache format": [ "{{", "}}" ],
                     "When the `el` contains template variables in ES6 format": [ "${", "}" ]
                 };
@@ -323,11 +319,6 @@
                     };
 
                     view = new Backbone.View( { template: "#" + templateId } );
-                } );
-
-                afterEach( function () {
-                    $template.remove();
-                    Backbone.InlineTemplate.clearCache();
                 } );
 
                 it( 'the `el` content is cached correctly', function () {

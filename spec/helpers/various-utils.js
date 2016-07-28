@@ -39,3 +39,28 @@ function dataAttributesToProperties ( dataAttributesHash ) {
 
     return transformed;
 }
+
+/**
+ * Normalizes an attributes hash, accounting for browser-dependent variations in attribute names. Also transforms the
+ * "class" property to "className".
+ *
+ * As for browser-dependent variations, currently "contentEditable" (older IE, e.g. IE9) is normalized to
+ * "contenteditable".
+ *
+ * @param   {Object|undefined} hash
+ * @returns {Object|undefined}
+ */
+function normalizeAttributes ( hash ) {
+    var normalized = {};
+
+    // Bail out if not a hash, e.g. if undefined
+    if ( hash === undefined ) return hash;
+
+    $.each( hash, function ( key, value ) {
+        if ( key.toLowerCase() === "contenteditable" ) key = "contenteditable";
+        if ( key === "class" ) key = "className";
+        normalized[key] = value;
+    } );
+
+    return normalized;
+}
