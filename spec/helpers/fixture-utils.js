@@ -5,19 +5,26 @@
  * @param   {string} varEndDelimiter           end delimiter of a template variable (e.g. "}}" for Mustache)
  * @param   {object} [options]
  * @param   {string} [options.indentation=""]  a string of whitespace, e.g. "   " or "" (no indentation)
- * @param   {string} [options.insertion=""]    an additional string which is inserted somewhere in the middle of the content
+ * @param   {string} [options.insertion=""]    an additional string which is inserted somewhere in the middle of the
+ *                                             content (if left undefined, a blank line, plus insertion, appears instead)
  * @returns {string}
  */
 function createInnerContent ( varStartDelimiter, varEndDelimiter, options ) {
     var indent = options && options.indentation || "",
-        insert = options && options.insertion ? indent + options.insertion : "",
-        innerContent = indent + '<h1 class="header">This is a %%header&&</h1>    \n' +
-                       indent + 'Some random %%text&& with different line breaks.<br><br/><br />\n' +
-                       insert +
-                       indent + '<dl class="%%dl_class&&">\n' +
-                       indent + '  <dt class="dtclass">%%dd_name&&</dt>\n' +
-                       indent + '  <dd class="ddclass">%%dd_content&&</dd>\n' +
-                       indent + '</dl>';
+        insert = options && options.insertion || "",
+        lines = [
+            '<h1 class="header">This is a %%header&&</h1>    ',
+            'Some random %%text&& with different line breaks.<br><br/><br />',
+            insert,
+            '<dl class="%%dl_class&&">',
+            '  <dt class="dtclass">%%dd_name&&</dt>',
+            '  <dd class="ddclass">%%dd_content&&</dd>',
+            '</dl>'
+        ],
+        
+        innerContent = _.map( lines, function ( line ) {
+            return indent + line;
+        } ).join( "\n" );
 
     return innerContent.replace( /%%/g, varStartDelimiter ).replace( /&&/g, varEndDelimiter );
 }
