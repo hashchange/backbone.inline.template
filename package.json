@@ -27,7 +27,7 @@
   "license": "MIT",
   "dependencies": {
     "backbone": "^1.0.0 <1.4.0",
-    "backbone.declarative.views": "^2.2.0",
+    "backbone.declarative.views": "#v3-dev",
     "underscore": "^1.5.0 <1.9.0"
   },
   "devDependencies": {

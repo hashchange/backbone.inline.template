@@ -15,7 +15,7 @@ requirejs.config( {
         'underscore': 'underscore/underscore',
         'backbone': 'backbone/backbone',
         'marionette': 'marionette/lib/backbone.marionette',
-        'backbone.declarative.views': 'backbone.declarative.views/dist/amd/backbone.declarative.views',
+        'backbone.declarative.views': 'backbone.declarative.views/dist/backbone.declarative.views',
 
         'backbone.inline.template': '/dist/amd/backbone.inline.template',
 
