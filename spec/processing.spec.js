@@ -178,8 +178,8 @@
 
                         expected.cacheContent = {
                             // Cloning the cache object for preserving the values and testing value equality (values
-                            // only, not the `outerHtml` and `compiled` functions)
-                            cachedProperties: _.omit( view.inlineTemplate.getCachedTemplate(), "outerHtml", "compiled" )
+                            // only, not the `compiled` function)
+                            cachedProperties: _.omit( view.inlineTemplate.getCachedTemplate(), "compiled" )
                         };
 
                         expected.templateNode.afterFirstAccess = {
@@ -214,7 +214,7 @@
 
                         it( 'keeps the cached content as it has been after first access (exact identity)', function () {
                             var cached = view2.inlineTemplate.getCachedTemplate(),
-                                properties = _.omit( cached, "outerHtml", "compiled" );
+                                properties = _.omit( cached, "compiled" );
 
                             expect( cached ).to.equal( expected.cacheContent.cachedTemplate );
                             expect( properties ).to.eql( expected.cacheContent.cachedProperties );
@@ -248,7 +248,7 @@
 
                         it( 'keeps the cached content as it has been after first access (recreated)', function () {
                             var cached = view2.inlineTemplate.getCachedTemplate(),
-                                properties = _.omit( cached, "outerHtml", "compiled" );
+                                properties = _.omit( cached, "compiled" );
 
                             expect( properties ).to.eql( expected.cacheContent.cachedProperties );
                         } );
@@ -277,9 +277,9 @@
 
             describe( 'Backbone.Inline.Template is set to process all input, with `hasInlineTemplate` always returning true.', function () {
 
-                // NB Raw HTML strings can't be marked with a data attribute which would signal that
-                // Backbone.Inline.Template should process the string. So, in order to react to the
-                // HTML string, Backbone.Inline.Template must be made to process all input.
+                // NB When Backbone.Inline.Template is set to process all input, raw HTML strings need not be marked
+                // with a data attribute, placed in a comment, which would signal that Backbone.Inline.Template should
+                // process the string.
 
                 var _hasInlineEl;
 
@@ -361,14 +361,93 @@
                     it( 'throws an error when passed a raw HTML string as a template', function () {
                         expect( function () {
                             new Backbone.View( { template: templateHtml } );
-                        } ).to.throw( Backbone.DeclarativeViews.TemplateError, "Backbone.Inline.Template: Failed to parse template with inline `el` definition." );
+                        } ).to.throw( Backbone.DeclarativeViews.TemplateError, "Backbone.Inline.Template: Can't update the template container because it doesn't exist in the DOM." );
                     } );
 
                 } );
 
             } );
 
-            describe( 'Backbone.Inline.Template is set to only process marked templates, ie to ignore template strings.', function () {
+            describe( 'Backbone.Inline.Template is set to only process marked templates (default), and the template string contains the data attribute marker in a comment.', function () {
+
+                beforeEach( function () {
+                    var elDefinition = {
+                            tagName: "p",
+                            className: "fooClass barClass",
+                            id: "fooId",
+                            attributes: { lang: "fr", contenteditable: "true" }
+                        },
+
+                        elContent = createInnerContent( "{{", "}}" ),
+                        inlineTemplate = createInlineTemplate( elDefinition, elContent );
+
+                    templateHtml = '<!-- data-el-definition="inline" -->' +
+                                   inlineTemplate.html.fullContent;
+
+                    expected = {
+                        el: {
+                            tagName: elDefinition.tagName,
+                            className: elDefinition.className,
+                            id: elDefinition.id,
+                            attributes: elDefinition.attributes,
+                            fullAttributes: inlineTemplate.el.fullAttributes,
+                            content: elContent
+                        }
+                    };
+                } );
+
+                describe( 'The `updateTemplateSource` setting is left at its default, ie is disabled. Backbone.Inline.Template', function () {
+
+                    beforeEach( function () {
+                        view = new Backbone.View( { template: templateHtml } );
+                    } );
+
+                    it( 'sets up the `el` as defined in the template', function () {
+                        expect( view.el.tagName.toLowerCase() ).to.equal( expected.el.tagName.toLowerCase() );
+                        expect( normalizeAttributes( getAttributes( view.el ) ) ).to.eql( expected.el.fullAttributes );
+                    } );
+
+                    it( 'sets the cached `el` properties to the values defined in the template', function () {
+                        var cached = view.inlineTemplate.getCachedTemplate();
+
+                        expect( cached.tagName ).to.equal( expected.el.tagName );
+                        expect( cached.className ).to.equal( expected.el.className );
+                        expect( cached.id ).to.equal( expected.el.id );
+                        expect( normalizeAttributes( cached.attributes ) ).to.eql( expected.el.attributes );
+                    } );
+
+                    it( 'sets the cached template content to the `el` content', function () {
+                        // Determined by checking the cache.
+                        var cached = view.inlineTemplate.getCachedTemplate();
+                        expect( cached.html ).to.equal( expected.el.content );
+                    } );
+
+                } );
+
+                describe( 'The `updateTemplateSource` setting is enabled. Backbone.Inline.Template', function () {
+
+                    var _updateTemplateSourceDefault;
+
+                    before( function () {
+                        _updateTemplateSourceDefault = Backbone.InlineTemplate.updateTemplateSource;
+                        Backbone.InlineTemplate.updateTemplateSource = true;
+                    } );
+
+                    after( function () {
+                        Backbone.InlineTemplate.updateTemplateSource = _updateTemplateSourceDefault;
+                    } );
+
+                    it( 'throws an error when passed a raw HTML string as a template', function () {
+                        expect( function () {
+                            new Backbone.View( { template: templateHtml } );
+                        } ).to.throw( Backbone.DeclarativeViews.TemplateError, "Backbone.Inline.Template: Can't update the template container because it doesn't exist in the DOM." );
+                    } );
+
+                } );
+
+            } );
+
+            describe( 'Backbone.Inline.Template is set to only process marked templates (default), and the template string does not contain the marker.', function () {
 
                 var _updateTemplateSourceDefault;
 
@@ -400,7 +479,7 @@
 
                 } );
 
-                describe( 'a template string with data attributes on the outermost element is processed by Backbone.Declarative.Views as it normally would be, creating an `el` according to the data attributes and leaving the template alone', function () {
+                describe( 'a template string with data attributes in a comment is processed by Backbone.Declarative.Views as it normally would be, creating an `el` according to the data attributes and leaving the template alone', function () {
 
                     var elDefinition;
 
@@ -416,7 +495,8 @@
 
                         elDataAttributes = attributesHashToString( propertiesToDataAttributes( elDefinition ) );
 
-                        templateHtml = "<section " + elDataAttributes +  ">" + createInnerContent( "{{", "}}" ) + "</section>";
+                        templateHtml = "<!-- " + elDataAttributes + " -->" +
+                                       "<section>" + createInnerContent( "{{", "}}" ) + "</section>";
                         view = new Backbone.View( { template: templateHtml } );
                     } );
 
