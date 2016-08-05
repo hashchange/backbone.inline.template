@@ -11,7 +11,9 @@
         rxLeadingComments = /^(\s*<!--[\s\S]*?-->)+/,
         rxTrailingComments = /(<!--[\s\S]*?-->\s*)+$/,
         rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z][\s\S]*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
-        rxSelfClosingHtmlTag = /<\s*[a-zA-Z][\s\S]*?\/?\s*>/;
+        rxSelfClosingHtmlTag = /<\s*[a-zA-Z][\s\S]*?\/?\s*>/,
+
+        bbdvLoadTemplate = Backbone.DeclarativeViews.defaults.loadTemplate;
 
     //
     // Initialization
@@ -33,7 +35,7 @@
             hasInlineEl = pluginNamespace.custom.hasInlineEl || pluginNamespace.hasInlineEl || _hasInlineEl,
             updateTemplateContainer = pluginNamespace.updateTemplateSource,
 
-            $inputTemplate = $( templateProperty );
+            $inputTemplate = bbdvLoadTemplate( templateProperty );
 
         if ( _isMarkedAsUpdated( $inputTemplate ) || !hasInlineEl( $inputTemplate ) ) {
 
