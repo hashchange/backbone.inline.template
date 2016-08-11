@@ -72,6 +72,10 @@
                     expect( normalizeAttributes( getAttributes( view.el ) ) ).to.eql( expected.el.fullAttributes );
                 } );
 
+                it( 'leaves the `el` empty', function () {
+                    expect( view.$el.html() ).to.equal( "" );
+                } );
+
                 it( 'sets the cached `el` properties to the values defined in the template', function () {
                     var cached = view.inlineTemplate.getCachedTemplate();
 
@@ -127,6 +131,10 @@
                     it( 'sets up the `el` as defined in the template', function () {
                         expect( view.el.tagName.toLowerCase() ).to.equal( expected.el.tagName.toLowerCase() );
                         expect( normalizeAttributes( getAttributes( view.el ) ) ).to.eql( expected.el.fullAttributes );
+                    } );
+
+                    it( 'leaves the `el` empty', function () {
+                        expect( view.$el.html() ).to.equal( "" );
                     } );
 
                     it( 'sets the cached `el` properties to the values defined in the template', function () {
@@ -212,6 +220,10 @@
                             expect( normalizeAttributes( getAttributes( view2.el ) ) ).to.eql( expected.el.fullAttributes );
                         } );
 
+                        it( 'leaves the `el` empty', function () {
+                            expect( view.$el.html() ).to.equal( "" );
+                        } );
+
                         it( 'keeps the cached content as it has been after first access (exact identity)', function () {
                             var cached = view2.inlineTemplate.getCachedTemplate(),
                                 properties = _.omit( cached, "compiled" );
@@ -244,6 +256,10 @@
                         it( 'sets up the `el` as defined in the template', function () {
                             expect( view2.el.tagName.toLowerCase() ).to.equal( expected.el.tagName.toLowerCase() );
                             expect( normalizeAttributes( getAttributes( view2.el ) ) ).to.eql( expected.el.fullAttributes );
+                        } );
+
+                        it( 'leaves the `el` empty', function () {
+                            expect( view.$el.html() ).to.equal( "" );
                         } );
 
                         it( 'keeps the cached content as it has been after first access (recreated)', function () {
@@ -328,6 +344,10 @@
                         expect( normalizeAttributes( getAttributes( view.el ) ) ).to.eql( expected.el.fullAttributes );
                     } );
 
+                    it( 'leaves the `el` empty', function () {
+                        expect( view.$el.html() ).to.equal( "" );
+                    } );
+
                     it( 'sets the cached `el` properties to the values defined in the template', function () {
                         var cached = view.inlineTemplate.getCachedTemplate();
 
@@ -407,6 +427,10 @@
                         expect( normalizeAttributes( getAttributes( view.el ) ) ).to.eql( expected.el.fullAttributes );
                     } );
 
+                    it( 'leaves the `el` empty', function () {
+                        expect( view.$el.html() ).to.equal( "" );
+                    } );
+
                     it( 'sets the cached `el` properties to the values defined in the template', function () {
                         var cached = view.inlineTemplate.getCachedTemplate();
 
@@ -481,10 +505,12 @@
 
                 describe( 'a template string with data attributes in a comment is processed by Backbone.Declarative.Views as it normally would be, creating an `el` according to the data attributes and leaving the template alone', function () {
 
-                    var elDefinition;
+                    var _updateTemplateSourceDefault, elDefinition;
 
                     beforeEach( function () {
                         var elDataAttributes;
+
+                        _updateTemplateSourceDefault = Backbone.InlineTemplate.updateTemplateSource;
 
                         elDefinition = {
                             tagName: "p",
@@ -501,17 +527,20 @@
                     } );
 
                     afterEach( function () {
+                        Backbone.InlineTemplate.updateTemplateSource = _updateTemplateSourceDefault;
                         elDefinition = undefined;
                     } );
 
                     it( 'with `updateTemplateSource` off (default)', function () {
                         expect( view ).to.have.exactElProperties( elDefinition );
+                        expect( view.$el.html() ).to.equal( "" );
                         expect( view.template ).to.equal( templateHtml );
                     } );
 
                     it( 'with `updateTemplateSource` on', function () {
                         Backbone.InlineTemplate.updateTemplateSource = true;
                         expect( view ).to.have.exactElProperties( elDefinition );
+                        expect( view.$el.html() ).to.equal( "" );
                         expect( view.template ).to.equal( templateHtml );
                     } );
 
