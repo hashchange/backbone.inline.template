@@ -67,7 +67,7 @@ Please have a brief look at the [fine print and limitations][fine-print-limitati
 
 There are several reasons for wanting to see the `el` of a view inside a template.
 
-##### Markup should stay out of Javascript.
+**Markup should stay out of Javascript.**
   
 The principle itself doesn't really need explaining, it is a basic tenet of clean design. And using Backbone view properties like `tagName`, `className` etc is in direct violation of that principle. 
   
@@ -75,15 +75,15 @@ However, there is more than one way to achieve a separation of markup and Javasc
 
 A definite plus of Backbone.Declarative.Views is that it works with zero configuration in virtually any Backbone application. Inlining the `el` might be even more intuitive with Backbone.Inline.Template, and some might favour it for reasons of style. But [Backbone frameworks typically require][framework-integration] the templates to be modified in place, which adds a bit of complexity. If you can do without, why not [do it][Backbone.Declarative.Views].
 
-##### The `el` must be inline to make templates work on the server.
+**The `el` must be inline to make templates work on the server.**
 
 If you render your HTML on the server and slap on a Backbone application as a client-side progressive enhancement, you probably want to use the exact same templates on both ends. And your server-side app might require you to define the template root element, the `el`, inline. 
 
 Backbone.Inline.Template is your new best friend in that case, and it saves you from the worries which burden [other approaches][set-element-as-alternative].
 
-##### The `el` itself, and not just its content, depends on template variables.
+**The `el` itself, and not just its content, depends on template variables.**
 
-That, too, is a legitimate requirement. But in that case, sadly, Backbone.Inline.Template is [not for you][no-el-vars]. Have a look at its [limitations][fine-print-limitations] to see why. [Alternatives exist][set-element-as-alternative], though at a cost.
+That, too, is a [legitimate requirement][marionette-2357-comment-designermonkey]. But in that case, sadly, Backbone.Inline.Template is [not for you][no-el-vars]. Have a look at its [limitations][fine-print-limitations] to see why. [Alternatives exist][set-element-as-alternative], though at a cost.
 
 ## Dependencies and setup
 
