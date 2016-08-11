@@ -124,3 +124,20 @@ function normalizeAttributes ( hash ) {
 
     return normalized;
 }
+
+/**
+ * Normalizes a cache entry, accounting for browser-dependent variations in attribute names. Does not alter the input
+ * object, returns a (shallow) clone.
+ *
+ * Ie, the attributes property of a cache entry is normalized with normalizeAttributes(). See there for more.
+ *
+ * @param   {Object} entry
+ * @returns {Object}
+ */
+function normalizeCacheEntry ( entry ) {
+    var normalized = _.extend( {}, entry );
+
+    if ( entry.attributes !== undefined ) normalized.attributes = normalizeAttributes( entry.attributes );
+
+    return normalized;
+}
