@@ -193,7 +193,7 @@
         _.each( $sourceNode[0].attributes, function ( attrNode ) {
             var name = attrNode.nodeName,
                 value = attrNode.nodeValue,
-                include = value && name !== "class" && name !== "id";
+                include = value !== undefined && name !== "class" && name !== "id";
 
             if ( include ) sourceProps.otherAttributes[attrNode.nodeName] = value;
         } );
