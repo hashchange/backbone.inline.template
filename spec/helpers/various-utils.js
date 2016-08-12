@@ -84,6 +84,8 @@ function attributesHashToString ( attributesHash ) {
 /**
  * Receives a HTML element and returns a hash of its attributes.
  *
+ * A boolean attribute, e.g. `hidden`, is returned with an empty string as its value.
+ *
  * For the full lowdown, see http://stackoverflow.com/a/38623847/508355
  *
  * @param   {jQuery|Element} node
