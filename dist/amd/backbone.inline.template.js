@@ -1,4 +1,4 @@
-// Backbone.Inline.Template, v0.2.1
+// Backbone.Inline.Template, v0.3.0
 // Copyright (c) 2016 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.inline.template
@@ -39,7 +39,9 @@
             rxLeadingComments = /^(\s*<!--[\s\S]*?-->)+/,
             rxTrailingComments = /(<!--[\s\S]*?-->\s*)+$/,
             rxOutermostHtmlTagWithContent = /(<\s*[a-zA-Z][\s\S]*?>)([\s\S]*)(<\s*\/\s*[a-zA-Z]+\s*>)/,
-            rxSelfClosingHtmlTag = /<\s*[a-zA-Z][\s\S]*?\/?\s*>/;
+            rxSelfClosingHtmlTag = /<\s*[a-zA-Z][\s\S]*?\/?\s*>/,
+    
+            bbdvLoadTemplate = Backbone.DeclarativeViews.defaults.loadTemplate;
     
         //
         // Initialization
@@ -61,7 +63,7 @@
                 hasInlineEl = pluginNamespace.custom.hasInlineEl || pluginNamespace.hasInlineEl || _hasInlineEl,
                 updateTemplateContainer = pluginNamespace.updateTemplateSource,
     
-                $inputTemplate = $( templateProperty );
+                $inputTemplate = bbdvLoadTemplate( templateProperty );
     
             if ( _isMarkedAsUpdated( $inputTemplate ) || !hasInlineEl( $inputTemplate ) ) {
     
@@ -219,7 +221,7 @@
             _.each( $sourceNode[0].attributes, function ( attrNode ) {
                 var name = attrNode.nodeName,
                     value = attrNode.nodeValue,
-                    include = value && name !== "class" && name !== "id";
+                    include = value !== undefined && name !== "class" && name !== "id";
     
                 if ( include ) sourceProps.otherAttributes[attrNode.nodeName] = value;
             } );

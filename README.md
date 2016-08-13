@@ -474,7 +474,7 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release notes
 
-### v0.2.2
+### v0.3.0
 
 - Completed test suite
 - Fixed handling of `el` attributes with empty string values, are no longer dropped
