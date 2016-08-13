@@ -188,11 +188,22 @@ In order to treat all templates as having an inline `el`, the function just has 
 Backbone.InlineTemplate.hasInlineEl = function () { return true; };
 ```
 
+A word of caution: Please don't use `hasInlineEl` just to switch to another data attribute. If you want a data attribute to select your templates, use the one which is provided out of the box (`data-el-definition: "inline"`).
+
+Why? Because the jQuery methods for data attributes would interfere with the handling of your custom attribute. These methods are buggy and inconsistent across jQuery versions. Backbone.Inline.Templates takes care of the issues for the data attributes which are built in, but custom ones would not be covered by that.
+
 ## Cache
 
 Backbone.Inline.Template is a plug-in for [Backbone.Declarative.Views][], which does all the real work. Unsurprisingly, both share the same cache. Backbone.Inline.Template just provides a number of aliases to access that cache.
 
-In the documentation of Backbone.Declarative.Views, you'll find more [about the cache itself][Backbone.Declarative.Views-cache]. Below is a list of the available aliases.
+In the documentation of Backbone.Declarative.Views, you'll find more [about the cache itself][Backbone.Declarative.Views-cache]. 
+
+Used with Backbone.Inline.Template, the cache captures the state of the template after the `el` has been extracted. So when a template [is selected][selecting-templates] for processing by Backbone.Inline.Template and you request the [cached object][Backbone.Declarative.Views-cache-entry], 
+
+- the `html` property of the cached object returns the HTML _inside_ the `el`, not the HTML of the entire template (which would include the inline `el`)
+- the `compiled` property, likewise, returns the template function for the HTML _inside_ the `el` (if you have [defined a compiler function][Backbone.Declarative.Views-compiler]).
+
+The following aliases are available for the cache of Backbone.Declarative.Views.
 
 - Tell Backbone.Inline.Template [which template compiler function to use][Backbone.Declarative.Views-compiler]:
 
@@ -310,16 +321,6 @@ If you need to support template variables in the `el` itself, you have to go dow
 
 Backbone.Inline.Template can't help you with it and is not useful in that scenario. You can find an [alternative approach below][set-element-as-alternative], and additional inspiration e.g. [on Stack Overflow][so-set-element]. But [be aware of the pitfalls][set-element-cons].
 
-### `el` attributes must be key-value pairs
-
-If the `el` of the view has attributes, they must be key-value pairs. Boolean attributes are ignored. However, that limitation doesn't matter much because almost all attributes are key-value pairs anyway (e.g. `class="foo"`, `lang="en"`). Let's look at the edge cases, though.
-
-- The `contenteditable` attribute must be set with a value, e.g. as `contenteditable="true"`. You can't add it as a boolean attribute (`<p contenteditable>`), or it would get lost when the `el` is created. That said, according to the spec, `contenteditable` [requires a value][mdn-contenteditable] anyway.
-
-- The `hidden` attribute is a proper boolean, ie it is [used without a value][mdn-hidden] (`<p hidden>`). Unfortunately, you can't mark up an `el` with it.
-
-Needless to say, you can use boolean attributes on elements _inside_ the `el`. They just don't work for the `el` itself.
-
 ### Leave the `el` in place when rendering
 
 It may be quite obvious, but maybe warrants at least a mention: The `el` is already in place when you render, so don't throw it away needlessly. Nothing breaks if you do ([well, mostly][set-element-cons]), but you take a performance hit and have to face all sorts of event binding woes for no reason.
@@ -329,6 +330,28 @@ What does keeping the `el` imply? You defined the `el` inside the template. So i
 You could also, of course, have the template updated and its `el` removed by Backbone.Inline.Template. Use the [`updateTemplateSource` option][framework-integration] for that – you may have to turn it on anyway if [your framework expects it][framework-integration]. 
 
 Or better still, don't do any of this, don't (re-)compile the template yourself. There is a much easier and more efficient option: Pull the compiled template from the [built-in cache][cache] instead. There, the duplicate `el` tag is already removed for you.
+
+### Boolean `el` attributes are supported
+
+[Boolean attributes][spec-boolean-attributes] of an `el`, like [`hidden`][mdn-hidden], are fully supported. That includes the short notation with just the attribute name, without a value assignment (`<p hidden>`).
+
+### How to use template literals, instead of a selector
+
+Instead of picking a template element in the DOM with a selector, you can also pass in a complete template as a string. But how do you mark it for processing by Backbone.Inline.Template? Obviously, you can't [set a data attribute][selecting-templates] on a string.
+
+You have two options. For one, you can simply make sure that _all_ templates are processed by Backbone.Inline.Template. A [custom `hasInlineEl` function][custom-marker-function] does the trick.
+
+Alternatively, you can add a special HTML comment to your template string which selects it for processing:
+
+```html
+<!-- data-el-definition="inline" -->
+``` 
+
+The comment can be placed anywhere in your template. It is governed by the same rules as [special comments][Backbone.Declarative.Views-template-string] in Backbone.Declarative.Views.
+
+You can't use the special comment if you have defined [a custom `hasInlineEl` function][custom-marker-function]. Only the default data attribute is recognized in the comment (`data-el-definition="inline"`). 
+
+Please be aware that you cannot process template strings with Backbone.Inline.Template if you also configure it to update the template source. The `updateTemplateSource` setting [must be off][updateTemplateSource-limitations].
 
 ## Alternative approach: `setElement()`
 
@@ -451,6 +474,12 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release notes
 
+### v0.2.2
+
+- Completed test suite
+- Fixed handling of `el` attributes with empty string values, are no longer dropped
+- Updated Backbone.Declarative.Views dependency to 3.x
+
 ### v0.2.1
 
 - Added matcher tests
@@ -479,7 +508,9 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 [use-case]: #why-use-it
 [setup]: #dependencies-and-setup
 [framework-integration]: #framework-integration-updatetemplatesource
+[updateTemplateSource-limitations]: #limitations-of-updatetemplatesource
 [selecting-templates]: #selecting-templates-for-processing
+[custom-marker-function]: #providing-a-function-for-hasinlineel
 [cache]: #cache
 [fine-print-limitations]: #fine-print-and-limitations
 [no-el-vars]: #dont-use-template-variables-in-the-el-itself
@@ -496,7 +527,7 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 [so-set-element]: http://stackoverflow.com/questions/11594961/backbone-not-this-el-wrapping/11598543#11598543 "Backbone, not `this.el` wrapping, Answer by nikoshr – Stack Overflow"
 [setelement-event-rebinding-jsbin]: http://jsbin.com/fakadan/8 "Rendering views with setElement: Do DOM events survive? – JS Bin"
 [backbone-setelement]: http://backbonejs.org/#View-setElement "setElement() – Backbone.js"
-[mdn-contenteditable]: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/contenteditable "contenteditable – HTML | MDN"
+[spec-boolean-attributes]: https://html.spec.whatwg.org/multipage/infrastructure.html#boolean-attributes "Boolean attributes - HTML Living Standard | WHATWG"
 [mdn-hidden]: https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/hidden "hidden – HTML | MDN"
 
 [dist-dev]: https://raw.github.com/hashchange/backbone.inline.template/master/dist/backbone.inline.template.js "backbone.inline.template.js"
@@ -516,7 +547,9 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 [Backbone.Declarative.Views-compiler]: https://github.com/hashchange/backbone.declarative.views#keeping-compiled-templates-in-the-cache "Keeping compiled templates in the cache – Backbone.Declarative.Views"
 [Backbone.Declarative.Views-loader]: https://github.com/hashchange/backbone.declarative.views#using-a-custom-template-loader "Using a custom template loader – Backbone.Declarative.Views"
 [Backbone.Declarative.Views-cache-access]: https://github.com/hashchange/backbone.declarative.views#reading-template-data-from-the-cache "Reading template data from the cache – Backbone.Declarative.Views"
+[Backbone.Declarative.Views-cache-entry]: https://github.com/hashchange/backbone.declarative.views#what-is-on-offer-in-a-cache-entry "What is on offer in a cache entry? – Backbone.Declarative.Views"
 [Backbone.Declarative.Views-clear-cache]: https://github.com/hashchange/backbone.declarative.views#clearing-the-cache "Clearing the cache – Backbone.Declarative.Views"
+[Backbone.Declarative.Views-template-string]: https://github.com/hashchange/backbone.declarative.views#setting-the-template-property-to-a-template-string-rather-than-a-selector "Setting the template property to a template string rather than a selector – Backbone.Declarative.Views"
 
 [Node.js]: http://nodejs.org/ "Node.js"
 [Bower]: http://bower.io/ "Bower: a package manager for the web"
