@@ -5,7 +5,7 @@
   "authors": [
     "Michael Heim <heim@zeilenwechsel.de>"
   ],
-  "description": "Fully-formed templates for Backbone. Let template content define the DOM element of a Backbone view.",
+  "description": "Fully-formed templates for Backbone. Put the DOM element of a Backbone view into the template content.",
   "main": "dist/backbone.inline.template.js",
   "keywords": [
     "backbone",
