@@ -3,7 +3,7 @@
 [Quick intro][quick-intro] – [Why?][use-case] – [Setup][setup] – [Framework integration][framework-integration] – [Selecting templates][selecting-templates] – [Cache][cache]<br>
 [Limitations][fine-print-limitations] – [Alternative][set-element-as-alternative] – [Build and test][build]
 
-It seems that quite a few people would like to see fully-formed templates in Backbone: templates which contain the root element of the template – the `el` in Backbone lingo – and not just the inner HTML of that element. It's been a popular feature request [for Backbone][backbone-546], and [for frameworks built on it][marionette-2357]. 
+It seems that quite a few people would like to see fully-formed templates in Backbone: templates which contain the root element of the template – the `el`, in Backbone lingo – and not just the inner HTML of that element. It's been a popular feature request [for Backbone][backbone-546], and [for frameworks built on it][marionette-2357]. 
 
 Backbone.Inline.Template is that feature.
 
@@ -27,7 +27,7 @@ Note the data attribute `data-el-definition="inline"`. That's how you tell your 
 
 When you create a view with that template, its `el` will be the element you expect: `<p>`. It is already set up and available when `initialize()` is called, just like any other Backbone `el`.
 
-That's it, really. For your own processing and rendering, proceed as you like. However, you can boost performance and avoid accessing the DOM again. Fetch the template from the [cache of Backbone.Inline.Template][cache] instead. E.g.
+That's it, really. For your own processing and rendering, proceed as you like. However, you can boost performance and avoid accessing the DOM for retrieving the template. Fetch the template from the [cache of Backbone.Inline.Template][cache] instead. E.g.
 
 ```js
 // Tell Backbone.Inline.Template which template compiler function you use.
@@ -55,7 +55,7 @@ Backbone.InlineTemplate.updateTemplateSource = true;
 
 Now Backbone.Inline.Template sets up your `el` as it did before, but it also modifies the original template in place. By the time your framework kicks in, the HTML defining the `el` is no longer part of the template content. Instead, the framework sees a template it can understand: just the part which provides the inner HTML of the `el`.
 
-For which Backbone frameworks does that work? Presumably for most. Backbone.Inline.Template does its job at a very early stage during the life cycle of a view. So the chances are excellent that your framework of choice picks up the changes which Backbone.Inline.Template made to the templates.
+For which Backbone frameworks does that work? Presumably for most. Backbone.Inline.Template does its job at a very early stage during the life cycle of a view. So the chances are excellent that your framework of choice picks up the changes which Backbone.Inline.Template has made to the templates.
 
 You'll find the details on framework integration and the `updateTemplateSource` option [below][framework-integration].
 
@@ -69,11 +69,11 @@ There are several reasons for wanting to see the `el` of a view inside a templat
 
 **Markup should stay out of Javascript.**
   
-The principle itself doesn't really need explaining, it is a basic tenet of clean design. And using Backbone view properties like `tagName`, `className` etc is in direct violation of that principle. 
+The principle itself doesn't really need explaining, it is a basic tenet of clean design. Using Backbone view properties like `tagName`, `className` etc is in direct violation of that principle. 
   
 However, there is more than one way to achieve a separation of markup and Javascript code. If that separation is all you want from fully self-contained templates, consider using [Backbone.Declarative.Views][] instead, which does the job very well. In fact, Backbone.Inline.Template is just a plug-in for it, adding an additional layer of template wrangling.
 
-A definite plus of Backbone.Declarative.Views is that it works with zero configuration in virtually any Backbone application. Inlining the `el` might be even more intuitive with Backbone.Inline.Template, and some might favour it for reasons of style. But [Backbone frameworks typically require][framework-integration] the templates to be modified in place, which adds a bit of complexity. If you can do without, why not [do it][Backbone.Declarative.Views].
+A definite plus of Backbone.Declarative.Views is that it works with zero configuration in virtually any Backbone application. Inlining the `el` might be more intuitive with Backbone.Inline.Template, and some might favour it for reasons of style. But [Backbone frameworks typically require][framework-integration] the templates to be modified in place, which adds a bit of complexity. If you can do without, why not [do it][Backbone.Declarative.Views]. In any event, you have a choice.
 
 **The `el` must be inline to make templates work on the server.**
 
@@ -95,7 +95,7 @@ Backbone.Inline.Template augments the Backbone.View base type, so its functional
 
 ### With Marionette
 
-Load backbone.inline.template.js after [Marionette][].
+Load backbone.inline.template.js after [Marionette][]. Do it in this order: Marionette, Backbone.Declarative.Views, Backbone.Inline.Template.
 
 If you use AMD, please be aware that Marionette is not declared as a dependency in the AMD build of Backbone.Inline.Template. Declare it yourself by adding the following shim to your config:
 
@@ -123,9 +123,9 @@ So if your templates contain the `el` of the view initially, it has to be gone b
 Backbone.InlineTemplate.updateTemplateSource = true;
 ```
 
-and your original templates are modified. They just contain the inner HTML of the `el` once Backbone.Inline.Template is done with them.
+and your original templates are modified. Once Backbone.Inline.Template is done with them, they just contain the inner HTML of the `el`.
 
-Also set that option if you are working with pre-existing code which expects "normal" templates (ie, templates without the `el` inside).
+You also need that option if you are working with pre-existing code which expects "normal" templates (ie, templates without the `el` inside).
 
 ##### How does it work?
 
@@ -139,7 +139,7 @@ Let's get the magic out of this process and look at an example. Suppose your ori
 </script>
 ```
 
-As soon as you instantiate a view which uses the template, Backbone.Inline.Template transforms the template into:
+As soon as you instantiate a view with that template, Backbone.Inline.Template transforms the template into:
 
 ```html
 <script id="some-template" type="text/x-template" 
@@ -148,21 +148,21 @@ As soon as you instantiate a view which uses the template, Backbone.Inline.Templ
 </script>
 ```
 
-This transformed version is presented to the framework when it processes the template. As you can see, the `el` tag is no longer part of the template content – just the inner HTML of the `el` is left. 
+The transformed version is presented to the framework when it processes the template. As you can see, the `el` tag is no longer part of the template content – just the inner HTML of the `el` is left. 
 
-Meanwhile, the `el` has morphed into a set of data attributes on the template element (`data-tag-name` etc). Backbone frameworks happily ignore the data attributes. However, they are picked up by [Backbone.Declarative.Views][Backbone.Declarative.Views], the engine behind Backbone.Inline.Template, whenever you instantiate a new view with this template. The `el` of the view is set up accordingly.
+Meanwhile, the `el` has morphed into a set of data attributes on the template element (`data-tag-name` etc). Backbone frameworks happily ignore the data attributes. However, they are picked up by [Backbone.Declarative.Views][Backbone.Declarative.Views], the engine behind Backbone.Inline.Template, whenever you instantiate a new view with the template. The `el` of the view is set up accordingly.
 
 ##### Limitations of `updateTemplateSource`
 
 The `updateTemplateSource` option is global. If you use it, the transformation applies to all templates which are [marked for processing][selecting-templates] by Backbone.Inline.Template. You can't transform templates on a case-by-case basis.
 
-Once the template is transformed, the original template element (`<script>` or `<template>`) is updated. So an actual template element needs to be present in the DOM. With `updateTemplateSource`, you can't use a raw HTML string as a template (you'll get an error if you do). Provide a node.
+As you have seen, the transformed template is written back to the original template element (`<script>` or `<template>`). So an actual template element needs to be present in the DOM. With `updateTemplateSource`, you can't use a raw HTML string as a template (you'll get an error if you do). Provide a node.
 
 ## Selecting templates for processing
 
-By default, a template is recognized as having an inline `el` when the template node is marked up with the following data attribute: `data-el-definition: "inline"`. All other templates are left alone.
+By default, Backbone.Inline.Template does not act on each and every template. A template is recognized as having an inline `el` only if a specific data attribute is set on the template element: `data-el-definition: "inline"`. All other templates are left alone.
 
-If that doesn't suit your needs, you can change it by overriding 
+If that doesn't suit your needs, you can change the way templates are selected for processing. Do it by overriding 
 
 ```js
 Backbone.InlineTemplate.hasInlineEl 
@@ -172,9 +172,9 @@ with a custom function.
 
 ##### Providing a function for `hasInlineEl`
 
-A custom `hasInlineEl` function receives the template node as argument, wrapped in a jQuery object. The function can examine the template node and must return a boolean.
+Your `hasInlineEl` function is called with a single argument: the template, as a jQuery object. The function can examine the template and must return a boolean.
 
-For instance, assume you want templates to be handled by Backbone.Inline.Template if they have an attribute of `type="text/x-inline-template"`. Set it up like this: 
+For instance, assume you want templates to be handled by Backbone.Inline.Template if they have an attribute of `type="text/x-inline-template"`. That can be achieved with
 
 ```js
 Backbone.InlineTemplate.hasInlineEl = function ( $template ) {
@@ -188,20 +188,20 @@ In order to treat all templates as having an inline `el`, the function just has 
 Backbone.InlineTemplate.hasInlineEl = function () { return true; };
 ```
 
-A word of caution: Please don't use `hasInlineEl` just to switch to another data attribute. If you want a data attribute to select your templates, use the one which is provided out of the box (`data-el-definition: "inline"`).
+A word of caution: Please don't define a custom `hasInlineEl` just for using another data attribute. If you want a data attribute to select your templates, use the one which is provided out of the box (`data-el-definition`).
 
 Why? Because the jQuery methods for data attributes would interfere with the handling of your custom attribute. These methods are buggy and inconsistent across jQuery versions. Backbone.Inline.Templates takes care of the issues for the data attributes which are built in, but custom ones would not be covered by that.
 
 ## Cache
 
-Backbone.Inline.Template is a plug-in for [Backbone.Declarative.Views][], which does all the real work. Unsurprisingly, both share the same cache. Backbone.Inline.Template just provides a number of aliases to access that cache.
+Backbone.Inline.Template is a plug-in for [Backbone.Declarative.Views][], which does all the real work. Unsurprisingly, both share the same template cache. Backbone.Inline.Template just provides a number of aliases to access that cache.
 
 In the documentation of Backbone.Declarative.Views, you'll find more [about the cache itself][Backbone.Declarative.Views-cache]. 
 
-Used with Backbone.Inline.Template, the cache captures the state of the template after the `el` has been extracted. So when a template [is selected][selecting-templates] for processing by Backbone.Inline.Template and you request the [cached object][Backbone.Declarative.Views-cache-entry], 
+Used with Backbone.Inline.Template, the cache captures the state of the template after the `el` has been extracted. So when a template [has been processed][selecting-templates] by Backbone.Inline.Template and you [query the template cache][Backbone.Declarative.Views-cache-access], 
 
-- the `html` property of the cached object returns the HTML _inside_ the `el`, not the HTML of the entire template (which would include the inline `el`)
-- the `compiled` property, likewise, returns the template function for the HTML _inside_ the `el` (if you have [defined a compiler function][Backbone.Declarative.Views-compiler]).
+- the `html` property of the [cached object][Backbone.Declarative.Views-cache-entry] refers to the HTML _inside_ the `el`, not the HTML of the entire template (which would have included the inline `el`)
+- the `compiled` property, likewise, hands you the template function for the HTML _inside_ the `el`, not the entire template. (You need to have [defined a compiler function][Backbone.Declarative.Views-compiler] for that, of course).
 
 The following aliases are available for the cache of Backbone.Declarative.Views.
 
@@ -325,21 +325,21 @@ Backbone.Inline.Template can't help you with it and is not useful in that scenar
 
 It may be quite obvious, but maybe warrants at least a mention: The `el` is already in place when you render, so don't throw it away needlessly. Nothing breaks if you do ([well, mostly][set-element-cons]), but you take a performance hit and have to face all sorts of event binding woes for no reason.
 
-What does keeping the `el` imply? You defined the `el` inside the template. So if you compile that template as it is, the `el` element shows up in the result. Remove that element before you inject template content into the existing `el` of the view.
+So you want to keep the `el`. What does that imply? You have defined the `el` inside the template. If you compile the template in its original form, the `el` element shows up in the result. You have to remove the `el` element from the template and only inject the remainder into the existing `el` of the view.
 
-You could also, of course, have the template updated and its `el` removed by Backbone.Inline.Template. Use the [`updateTemplateSource` option][framework-integration] for that – you may have to turn it on anyway if [your framework expects it][framework-integration]. 
+There is no need to transform the template yourself, though. Backbone.Inline.Template can remove the `el` for you and redefine the template with what is left. Use the [`updateTemplateSource` option][framework-integration] for that – you may have to turn it on anyway if [your framework expects it][framework-integration].
 
-Or better still, don't do any of this, don't (re-)compile the template yourself. There is a much easier and more efficient option: Pull the compiled template from the [built-in cache][cache] instead. There, the duplicate `el` tag is already removed for you.
+Or better still, don't even do that, don't (re-)compile the template yourself. There is a much easier and more efficient option: Pull the compiled template from the [built-in cache][cache] instead. There, the duplicate `el` tag [is already removed][cache] for you.
 
-### Boolean `el` attributes are supported
+### Boolean `el` attributes
 
 [Boolean attributes][spec-boolean-attributes] of an `el`, like [`hidden`][mdn-hidden], are fully supported. That includes the short notation with just the attribute name, without a value assignment (`<p hidden>`).
 
 ### How to use template literals, instead of a selector
 
-Instead of picking a template element in the DOM with a selector, you can also pass in a complete template as a string. But how do you mark it for processing by Backbone.Inline.Template? Obviously, you can't [set a data attribute][selecting-templates] on a string.
+For your templates, you don't always have to use a template element in the DOM, chosen with a selector. Instead, you can pass in a complete template as a string. But how do you mark it for processing by Backbone.Inline.Template? Obviously, you can't [set a data attribute][selecting-templates] on a string.
 
-You have two options. For one, you can simply make sure that _all_ templates are processed by Backbone.Inline.Template. A [custom `hasInlineEl` function][custom-marker-function] does the trick.
+You have two options. For one, you can simply make sure that _all_ templates are processed by Backbone.Inline.Template. That includes template strings. A [custom `hasInlineEl` function][custom-marker-function] does the trick.
 
 Alternatively, you can add a special HTML comment to your template string which selects it for processing:
 
@@ -386,7 +386,7 @@ render: function () {
 
 ##### The pros
 
-The `setElement()` pattern is unbeatable in one respect: you can use template variables for the `el` of a view.
+The `setElement()` pattern is unbeatable in one respect: you can use template variables to set up the `el` of a view.
 
 For instance, assume you need an individual `id` for each `el`. For some reason, you can't set the `id` in your Javascript code with the `id` property of the view. The `id` has to be a template variable, along the lines of 
 
@@ -402,15 +402,15 @@ That's not exactly a long list of advantages, but for that one use case, `setEle
 
 Relying on `setElement()` has a lot of drawbacks. None of these matter if your use case forces you to recreate the `el` (see [the pros][set-element-pros]). But there is a strong case against using `setElement()` if you have a choice.
 
-The challenges broadly fall into two categories: compatibility and implementation detail. Compatibility, both with existing and future code, is probably the more difficult of the two.
+The challenges broadly fall into two categories: compatibility and implementation detail. Compatibility, both with existing and future code, is probably the trickier of the two.
 
 - Defining the `el` in the template may be convenient and even necessary, but it breaks with Backbone conventions. For the view code you write yourself, that won't be much of an issue. But as soon as you pull third-party Backbone extensions like Marionette into a project, templates of that kind no longer work. You probably have to rewrite the render method of your would-be framework, at the very least, to adapt it.
 
   Backbone.Inline.Template does its processing very early during the life cycle of a view. That's why it is able to [present a cleaned-up, conventional template][framework-integration] to Backbone frameworks. With `setElement()`, however, you don't have that option. It forces you to keep the original template around until render time. 
 
-- Backbone is not very prescriptive about how it is to be used. It gives its users a lot of flexibility, and expects them to figure out their own way of handling views in particular. As a result, there are many different approaches and implementations.
+- Backbone is not very prescriptive about how it is to be used. It gives developers a lot of flexibility, and expects them to figure out their own way of handling views in particular. As a result, there are many different approaches and implementations.
 
-  Replacing a view's `el` with `setElement()`, on the other hand, requires very specific steps at a very specific time, and may clash with existing coding conventions. Expect problems when integrating it into legacy code. 
+  Replacing a view's `el` with `setElement()`, on the other hand, requires very specific steps at a very specific time, and may clash with the approach chosen in the application you work on. Expect problems when integrating it into legacy code.
 
 The other group of issues is about pitfalls when rendering views with `setElement()`. The devil here is in the details. These issues are solvable, but require attention (and additional code).
 
