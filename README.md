@@ -97,17 +97,17 @@ Backbone.Inline.Template augments the Backbone.View base type, so its functional
 
 Load backbone.inline.template.js after [Marionette][]. Do it in this order: Marionette, Backbone.Declarative.Views, Backbone.Inline.Template.
 
-If you use AMD, please be aware that Marionette is not declared as a dependency in the AMD build of Backbone.Inline.Template. Declare it yourself by adding the following shim to your config:
+If you use AMD, please be aware that Marionette is not declared as a dependency in the AMD build of Backbone.Inline.Template, nor in Backbone.Declarative.Views. Declare it yourself by adding the following shim to your config:
 
 ```javascript
 requirejs.config( {
     shim: {
-        'backbone.inline.template': {
-            deps: ['marionette']
-        }
+        'backbone.declarative.views': ['marionette']
     }
 } );
 ```
+
+Note that the shim makes Marionette a [dependency of Backbone.Declarative.Views][Backbone.Declarative.Views-setup-marionette], not of Backbone.Inline.Template.
 
 ### Download, Bower, npm
 
@@ -543,6 +543,7 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 [Marionette]: https://github.com/marionettejs/backbone.marionette#readme "Marionette: a composite application library for Backbone.js"
 [Backbone.Declarative.Views]: https://github.com/hashchange/backbone.declarative.views#readme "Backbone.Declarative.Views"
 
+[Backbone.Declarative.Views-setup-marionette]: https://github.com/hashchange/backbone.declarative.views#with-marionette "Dependencies and Setup: With Marionette – Backbone.Declarative.Views"
 [Backbone.Declarative.Views-cache]: https://github.com/hashchange/backbone.declarative.views#performance-use-the-template-cache "Performance: Use the template cache – Backbone.Declarative.Views"
 [Backbone.Declarative.Views-compiler]: https://github.com/hashchange/backbone.declarative.views#keeping-compiled-templates-in-the-cache "Keeping compiled templates in the cache – Backbone.Declarative.Views"
 [Backbone.Declarative.Views-loader]: https://github.com/hashchange/backbone.declarative.views#using-a-custom-template-loader "Using a custom template loader – Backbone.Declarative.Views"
