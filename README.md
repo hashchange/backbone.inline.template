@@ -93,6 +93,8 @@ If you use other components which extend Backbone.View, load these components af
 
 Backbone.Inline.Template augments the Backbone.View base type, so its functionality is available in every view throughout your code.
 
+When loaded as a module (e.g. AMD, Node), Backbone.Inline.Template does not export a meaningful value. It solely lives in the Backbone namespace.
+
 ### With Marionette
 
 Load backbone.inline.template.js after [Marionette][]. Do it in this order: Marionette, Backbone.Declarative.Views, Backbone.Inline.Template.
@@ -111,7 +113,7 @@ Note that the shim makes Marionette a [dependency of Backbone.Declarative.Views]
 
 ### Download, Bower, npm
 
-The stable version of Backbone.Inline.Template is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]), including an AMD build ([dev][dist-amd-dev], [prod][dist-amd-prod]). If you use Bower, fetch the files with `bower install backbone.inline.template`. With npm, it is `npm install backbone.inline.template`.
+The stable version of Backbone.Inline.Template is available in the `dist` directory ([dev][dist-dev], [prod][dist-prod]). If you use Bower, fetch the files with `bower install backbone.inline.template`. With npm, it is `npm install backbone.inline.template`.
 
 ## Framework integration: `updateTemplateSource`
 
@@ -532,8 +534,6 @@ Code in the data provider test helper: (c) 2014 Box, Inc., Apache 2.0 license. [
 
 [dist-dev]: https://raw.github.com/hashchange/backbone.inline.template/master/dist/backbone.inline.template.js "backbone.inline.template.js"
 [dist-prod]: https://raw.github.com/hashchange/backbone.inline.template/master/dist/backbone.inline.template.min.js "backbone.inline.template.min.js"
-[dist-amd-dev]: https://raw.github.com/hashchange/backbone.inline.template/master/dist/amd/backbone.inline.template.js "backbone.inline.template.js, AMD build"
-[dist-amd-prod]: https://raw.github.com/hashchange/backbone.inline.template/master/dist/amd/backbone.inline.template.min.js "backbone.inline.template.min.js, AMD build"
 
 [data-provider.js]: https://github.com/hashchange/backbone.inline.template/blob/master/spec/helpers/data-provider.js "Source code of data-provider.js"
 

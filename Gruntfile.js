@@ -34,8 +34,7 @@ module.exports = function (grunt) {
     preprocess: {
       build: {
         files: {
-          'dist/backbone.inline.template.js': 'src/backbone.inline.template.js',
-          'dist/amd/backbone.inline.template.js': 'src/amd.js'
+          'dist/backbone.inline.template.js': 'src/backbone.inline.template.js'
         }
       },
       interactive: {
@@ -52,10 +51,6 @@ module.exports = function (grunt) {
       build: {
         src: 'dist/backbone.inline.template.js',
         dest: 'dist/backbone.inline.template.js'
-      },
-      amd_banner: {
-        src: 'dist/amd/backbone.inline.template.js',
-        dest: 'dist/amd/backbone.inline.template.js'
       }
     },
 
@@ -66,10 +61,6 @@ module.exports = function (grunt) {
           except: ['jQuery', 'Zepto', 'Backbone', '_']
         },
         sourceMap: true
-      },
-      amd: {
-        src: 'dist/amd/backbone.inline.template.js',
-        dest: 'dist/amd/backbone.inline.template.min.js'
       },
       core: {
         src: 'dist/backbone.inline.template.js',

@@ -9,7 +9,7 @@
   },
   "author": "Michael Heim <heim@zeilenwechsel.de> (http://www.zeilenwechsel.de/)",
   "description": "Fully-formed templates for Backbone. Put the DOM element of a Backbone view into the template content.",
-  "main": "dist/amd/backbone.inline.template.js",
+  "main": "dist/backbone.inline.template.js",
   "keywords": [
     "backbone",
     "views",
