@@ -20,6 +20,7 @@ requirejs.config( {
 
         'backbone.inline.template': 'dist/backbone.inline.template',
 
+        'local.main': 'demo/amd/main',
         'local.base': 'demo/amd/base',
         'local.views-backbone': 'demo/amd/views-backbone',
         'local.views-marionette': 'demo/amd/views-marionette'

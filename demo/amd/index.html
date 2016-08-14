@@ -107,6 +107,20 @@
         require( ['demo/amd/main'] );
     </script>
 
+    <!--
+        For testing the output of r.js:
+
+        - Generate an optimized r.js build (build.js). See info in rjs/build-commands.md
+        - Comment out the runtime async script loading, above
+        - Uncomment the script tag below
+    -->
+    <!--<script src="rjs/output/unified/build.js"></script>-->
+
+    <!--
+        Alternatively, also for testing r.js, use the multi-part build
+    -->
+    <!--<script src="rjs/output/parts/vendor.js"></script>-->
+    <!--<script src="rjs/output/parts/app.js"></script>-->
 
     <script src="../close-build-info.js"></script>
 </body>
