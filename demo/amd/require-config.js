@@ -17,7 +17,7 @@ requirejs.config( {
         'marionette': 'marionette/lib/backbone.marionette',
         'backbone.declarative.views': 'backbone.declarative.views/dist/backbone.declarative.views',
 
-        'backbone.inline.template': '/dist/amd/backbone.inline.template',
+        'backbone.inline.template': '/dist/backbone.inline.template',
 
         'local.base': '../demo/amd/base',
         'local.views-backbone': '../demo/amd/views-backbone',
