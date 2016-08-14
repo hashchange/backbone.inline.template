@@ -38,7 +38,8 @@
         $document = $( document ),
         pluginNamespace = Backbone.InlineTemplate = {
             hasInlineEl: _hasInlineEl,
-            updateTemplateSource: false
+            updateTemplateSource: false,
+            version: "__COMPONENT_VERSION_PLACEHOLDER__"
         },
 
         rxLeadingComments = /^(\s*<!--[\s\S]*?-->)+/,
