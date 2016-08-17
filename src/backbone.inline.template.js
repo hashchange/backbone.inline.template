@@ -56,6 +56,7 @@
     Backbone.DeclarativeViews.plugins.registerDataAttribute( "el-definition" );
     Backbone.DeclarativeViews.plugins.registerDataAttribute( "bbit-internal-template-status" );
     Backbone.DeclarativeViews.plugins.registerCacheAlias( pluginNamespace, "inlineTemplate" );
+    Backbone.DeclarativeViews.plugins.enforceTemplateLoading();
 
     //
     // Template loader
