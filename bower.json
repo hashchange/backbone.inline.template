@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "backbone": "^1.0.0 <1.4.0",
-    "backbone.declarative.views": "^3.0.0",
+    "backbone.declarative.views": "^3.1.0",
     "underscore": "^1.5.0 <1.9.0"
   }
 }
