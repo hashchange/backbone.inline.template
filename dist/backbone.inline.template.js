@@ -1,4 +1,4 @@
-// Backbone.Inline.Template, v1.0.0
+// Backbone.Inline.Template, v1.0.1
 // Copyright (c) 2016 Michael Heim, Zeilenwechsel.de
 // Distributed under MIT license
 // http://github.com/hashchange/backbone.inline.template
@@ -44,7 +44,7 @@
         pluginNamespace = Backbone.InlineTemplate = {
             hasInlineEl: _hasInlineEl,
             updateTemplateSource: false,
-            version: "1.0.0"
+            version: "1.0.1"
         },
 
         rxLeadingComments = /^(\s*<!--[\s\S]*?-->)+/,
@@ -61,6 +61,7 @@
     Backbone.DeclarativeViews.plugins.registerDataAttribute( "el-definition" );
     Backbone.DeclarativeViews.plugins.registerDataAttribute( "bbit-internal-template-status" );
     Backbone.DeclarativeViews.plugins.registerCacheAlias( pluginNamespace, "inlineTemplate" );
+    Backbone.DeclarativeViews.plugins.enforceTemplateLoading();
 
     //
     // Template loader

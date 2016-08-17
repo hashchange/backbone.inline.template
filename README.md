@@ -476,6 +476,11 @@ New test files in the `spec` directory are picked up automatically, no need to e
 
 ## Release notes
 
+### 1.0.1
+
+- Fixed template source failing to update if all `el` properties are defined in a Backbone view
+- Updated Backbone.Declarative.Views dependency to 3.1
+
 ### 1.0.0
 
 - Removed the separate AMD/Node builds in `dist/amd`. Module systems and browser globals are now supported by the same file, `dist/backbone.inline.template.js` (or `.min.js`)
