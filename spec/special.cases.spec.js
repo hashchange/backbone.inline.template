@@ -332,6 +332,99 @@
 
         } );
 
+        describe( 'When all `el` properties are defined with view properties, overriding the `el` in the template', function () {
+
+            var elDefinitionInTemplate, elDefinitionInView, templateId, inlineTemplate, $originalTemplate, $template;
+
+            beforeEach( function () {
+                var elContent = createInnerContent( "{{", "}}" );
+
+                elDefinitionInTemplate = {
+                    tagName: "p",
+                    className: "fooClass barClass",
+                    id: "fooId",
+                    attributes: {
+                        lang: "fr"
+                    }
+                };
+
+                elDefinitionInView = {
+                    tagName: "section",
+                    className: "viewClass otherViewClass",
+                    id: "viewId",
+                    attributes: {
+                        dir: "ltr"
+                    }
+                };
+
+                templateId = _.uniqueId( "template_" );
+                inlineTemplate = createInlineTemplate( elDefinitionInTemplate, elContent );
+                $originalTemplate = createTemplateNode( templateId, inlineTemplate.html.fullContent, { "data-el-definition": "inline" } )
+                    .appendTo( $head );
+
+                expected = {
+                    template: {
+                        content: elContent,
+                        elDataAttributes: propertiesToDataAttributes( elDefinitionInTemplate )
+                    },
+                    el: {
+                        tagName: elDefinitionInView.tagName,
+                        fullAttributes: _.extend( _.omit( elDefinitionInView, "tagName", "attributes" ), elDefinitionInView.attributes )
+                    },
+                    cache: _.extend( {}, elDefinitionInTemplate, { html: elContent, compiled: undefined } )
+                };
+            } );
+
+            afterEach( function () {
+                if ( $originalTemplate ) $originalTemplate.remove();
+                elDefinitionInTemplate = elDefinitionInView = templateId = inlineTemplate = $originalTemplate = $template = undefined;
+            } );
+
+            describe( 'with `updateTemplateSource` enabled', function () {
+
+                var _updateTemplateSourceDefault;
+
+                before( function () {
+                    _updateTemplateSourceDefault = Backbone.InlineTemplate.updateTemplateSource;
+                    Backbone.InlineTemplate.updateTemplateSource = true;
+                } );
+
+                after( function () {
+                    Backbone.InlineTemplate.updateTemplateSource = _updateTemplateSourceDefault;
+                } );
+
+                beforeEach( function () {
+                    view = new Backbone.View( _.extend( { template: "#" + templateId }, elDefinitionInView ) );
+
+                    // We re-read the template from the DOM, so that the tests still work in case the original template
+                    // node is deleted and replaced by an entirely new one (not currently the case, though).
+                    $template = $( "#" + templateId );
+                } );
+
+                it( 'the `el` is set up as defined by the view properties', function () {
+                    expect( view.el.tagName.toLowerCase() ).to.equal( expected.el.tagName.toLowerCase() );
+                    expect( normalizeAttributes( getAttributes( view.el ) ) ).to.eql( expected.el.fullAttributes );
+                } );
+
+                it( 'the source template is updated even though all properties are overridden; it is set to the content inside the `el`', function () {
+                    // Ie, the conversion by Backbone.Inline.Template kicks in despite the overrides.
+                    expect( $template.html() ).to.equal( expected.template.content );
+                } );
+
+                it( 'the `el` definition in the template, not the one in the view properties, is converted into data attributes on the template tag', function () {
+                    expect( normalizeAttributes( getAttributes( $template ) ) ).to.containSubset( expected.template.elDataAttributes );
+                } );
+
+                it( 'an additional data attribute is added to the template, acting as a flag that processing of the inline `el `is done and must not be repeated', function () {
+                    // NB This is an internal attribute and not to be relied upon. It is not part of a "semi-official"
+                    // API even though it is specified by a test. The internal mechanism may change at any time without
+                    // notice (including the test).
+                    expect( normalizeAttributes( getAttributes( $template ) ) ).to.have.a.property( "data-bbit-internal-template-status", "updated" );
+                } );
+
+            } );
+
+        } );
     } );
 
 })();
